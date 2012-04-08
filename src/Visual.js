@@ -1,5 +1,5 @@
-function Visual(domElement, width, height) {
-  return new Visual.Scene(domElement, width, height);
+function Visual(opts) {
+  return new Visual.Scene(opts);
 }
 
 Visual.export = function(moduleNames) {

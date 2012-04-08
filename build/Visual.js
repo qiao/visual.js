@@ -792,8 +792,8 @@ THREE.ShaderFlares={lensFlareVertexTexture:{vertexShader:"uniform vec3 screenPos
 lensFlare:{vertexShader:"uniform vec3 screenPosition;\nuniform vec2 scale;\nuniform float rotation;\nuniform int renderType;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uv;\nvec2 pos = position;\nif( renderType == 2 ) {\npos.x = cos( rotation ) * position.x - sin( rotation ) * position.y;\npos.y = sin( rotation ) * position.x + cos( rotation ) * position.y;\n}\ngl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );\n}",fragmentShader:"precision mediump float;\nuniform sampler2D map;\nuniform sampler2D occlusionMap;\nuniform float opacity;\nuniform int renderType;\nuniform vec3 color;\nvarying vec2 vUV;\nvoid main() {\nif( renderType == 0 ) {\ngl_FragColor = vec4( texture2D( map, vUV ).rgb, 0.0 );\n} else if( renderType == 1 ) {\ngl_FragColor = texture2D( map, vUV );\n} else {\nfloat visibility = texture2D( occlusionMap, vec2( 0.5, 0.1 ) ).a +\ntexture2D( occlusionMap, vec2( 0.9, 0.5 ) ).a +\ntexture2D( occlusionMap, vec2( 0.5, 0.9 ) ).a +\ntexture2D( occlusionMap, vec2( 0.1, 0.5 ) ).a;\nvisibility = ( 1.0 - visibility / 4.0 );\nvec4 texture = texture2D( map, vUV );\ntexture.a *= opacity * visibility;\ngl_FragColor = texture;\ngl_FragColor.rgb *= color;\n}\n}"}};
 THREE.ShaderSprite={sprite:{vertexShader:"uniform int useScreenCoordinates;\nuniform int affectedByDistance;\nuniform vec3 screenPosition;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform float rotation;\nuniform vec2 scale;\nuniform vec2 alignment;\nuniform vec2 uvOffset;\nuniform vec2 uvScale;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uvOffset + uv * uvScale;\nvec2 alignedPosition = position + alignment;\nvec2 rotatedPosition;\nrotatedPosition.x = ( cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y ) * scale.x;\nrotatedPosition.y = ( sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y ) * scale.y;\nvec4 finalPosition;\nif( useScreenCoordinates != 0 ) {\nfinalPosition = vec4( screenPosition.xy + rotatedPosition, screenPosition.z, 1.0 );\n} else {\nfinalPosition = projectionMatrix * modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\nfinalPosition.xy += rotatedPosition * ( affectedByDistance == 1 ? 1.0 : finalPosition.z );\n}\ngl_Position = finalPosition;\n}",
 fragmentShader:"precision mediump float;\nuniform vec3 color;\nuniform sampler2D map;\nuniform float opacity;\nvarying vec2 vUV;\nvoid main() {\nvec4 texture = texture2D( map, vUV );\ngl_FragColor = vec4( color * texture.xyz, texture.a * opacity );\n}"}};
-function Visual(domElement, width, height) {
-  return new Visual.Scene(domElement, width, height);
+function Visual(opts) {
+  return new Visual.Scene(opts);
 }
 
 Visual.export = function(moduleNames) {
@@ -814,35 +814,45 @@ Visual.export = function(moduleNames) {
   });
 }
 Visual.Vector = THREE.Vector3;
-Visual.Scene = function(domElement, width, height) {
+Visual.Scene = function(opts) {
+  opts = opts || {};
   // setup scene parameters
-  this.center = new Visual.Vector(0, 0, 0);
-  this.forward = new Visual.Vector(0, 0, -1);
-  this.scale = new Visual.Vector(0.1, 0.1, 0.1);
-  this.up = new Visual.Vector(0, 1, 0);
-  this.fov = 60;
-  // TODO: range
+  this.domElement  = opts.domElement || document.body;
+  this._width      = opts.width      || 640;
+  this._height     = opts.height     || 480;
+  this._center     = opts.center     || new Visual.Vector(0, 0, 0);
+  this._forward    = opts.forward    || new Visual.Vector(0, 0, -1);
+  this._scale      = opts.scale      || new Visual.Vector(0.1, 0.1, 0.1);
+  this._up         = opts.up         || new Visual.Vector(0, 1, 0);
+  this._fov        = opts.fov        || 60;
+  this._foreground = opts.foreground || 0xff0000;
+  this._background = opts.background || 0x000000;
 
-  this.autocenter = true;
-  this.autoscale = true;
-  this.userzoom = true;
-  this.userspin = true;
+  this.autocenter  = opts.autocenter || true;
+  this.autoscale   = opts.autoscale  || true;
+  this.userzoom    = opts.userzoom   || true;
+  this.userspin    = opts.userspin   || true;
 
-  this.foreground = 0xff0000;
-  this.background = 0x000000;
 
-  var scene = this._scene = new THREE.Scene();
-  var camera = this._camera = new THREE.PerspectiveCamera(this.fov, width / height, 1, 100000);
-  var renderer = this._renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setClearColor(this.background, 1);
-  renderer.setSize(width, height);
-  domElement.appendChild(renderer.domElement);
+  // create scene
+  var scene = this.scene = new THREE.Scene();
+
+  // create camera
+  var camera = this.camera = new THREE.PerspectiveCamera(
+    this.fov, this._width / this._height, 1, 100000
+  );
   camera.position.set(10, 3, 10);
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
+  camera.lookAt(this._center);
   scene.add(camera);
 
+  // create renderer
+  var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setClearColor(this._background, 1);
+  renderer.setSize(this._width, this._height);
+  this.domElement.appendChild(renderer.domElement);
+
   // create lights
-  var ambient = this._ambient = new THREE.AmbientLight(0x111111);
+  var ambient = new THREE.AmbientLight(0x111111);
   scene.add(ambient);
   var light1 = new THREE.DirectionalLight(0xffffff, 0.8);
   light1.position.set(1, 2, 4).normalize();
@@ -852,7 +862,7 @@ Visual.Scene = function(domElement, width, height) {
   scene.add(light2);
 
   // create camera controller
-  var controls = this._controls = new THREE.TrackballControls(camera);
+  var controls = this.controls = new THREE.TrackballControls(camera);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 1.0;
   controls.panSpeed = 0.8;
@@ -874,25 +884,56 @@ Visual.Scene.prototype = {
   constructor: Visual.Scene,
 
   add: function(obj) {
-    this._scene.add(obj.mesh);
+    this.scene.add(obj.mesh);
   },
 
   remove: function(obj) {
-    this._scene.remove(obj.mesh);
+    this.scene.remove(obj.mesh);
+  },
+
+  get center() {
+    return this.controls.target;
+  },
+  set center(v) {
+    this.camera.lookAt(v);
   },
 
   renderLoop: function() {
-    var scene = this._scene;
-    var camera = this._camera;
-    var renderer = this._renderer;
-    var controls = this._controls;
+    var self = this;
     (function loop() {
       requestAnimationFrame(loop);
-      controls.update();
-      renderer.clear();
-      renderer.render(scene, camera);
+      
+      // update camera
+      self.controls.update();
+      if (self.autocenter || self.autoscale) {
+        self._calculateExtent();
+      }
+      if (self.autocenter) { 
+        self._adjustCenter();
+      }
+      if (self.autoscale) {
+        self._adjustScale();
+      }
+
+      // render
+      self.renderer.clear();
+      self.renderer.render(self.scene, self.camera);
     })();
   },
+
+  _calculateExtent: function() {
+  
+  },
+
+  _adjustCenter: function() {
+
+  },
+
+  _adjustScale: function() {
+  
+  },
+
+  
 };
 Visual.Primitive = function(scene, opts) {
   scene = scene || {};
@@ -952,8 +993,6 @@ Visual.Box = function(scene, opts) {
   var mesh = new THREE.Mesh(geometry, material);
   mesh.position = this.pos;
   this.mesh = mesh;
-
-  this.scene.add(this);
 };
 
 Visual.Box.prototype = new Visual.Primitive();
