@@ -11,8 +11,6 @@ Visual.Box = function(scene, opts) {
   var mesh = new THREE.Mesh(geometry, material);
   mesh.position = this.pos;
   this.mesh = mesh;
-
-  this.scene.add(this);
 };
 
 Visual.Box.prototype = new Visual.Primitive();
