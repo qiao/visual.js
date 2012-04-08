@@ -28,7 +28,7 @@
     });
     ball.velocity = new Visual.Vector(0, -1, 0);
 
-    dt = 0.01;
+    var dt = 0.01;
     setInterval(function() {
       ball.pos.addSelf(
         ball.velocity.clone().multiplyScalar(dt)
