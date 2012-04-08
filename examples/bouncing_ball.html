@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual.js - Bouncing Ball</title>
+  <script type="text/javascript" src="../build/Visual.js"></script>
+</head>
+<body>
+  <script type="text/javascript">
+    var scene = Visual(document.body, 640, 480);
+    var box = scene.box({
+      pos: new Visual.Vector(0, 0, 0),
+      length: 4,
+      height: 0.5,
+      width: 4,
+      color: 0xdddddd
+    });
+
+    var ball = scene.sphere({
+      pos: new Visual.Vector(0, 4, 0),
+      radius: 1,
+      color: 0xff0000
+    });
+    ball.velocity = new Visual.Vector(0, -1, 0);
+
+    var dt = 0.01;
+    setInterval(function() {
+      ball.pos.addSelf(
+        ball.velocity.clone().multiplyScalar(dt)
+      );
+      if (ball.y < ball.radius) {
+        ball.velocity.y = Math.abs(ball.velocity.y);
+      } else {
+        ball.velocity.y = ball.velocity.y - 9.8 * dt;
+      }
+    }, dt * 1000);
+  </script>
+</body>
+</html>
