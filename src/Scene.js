@@ -46,7 +46,8 @@ Visual.Scene = function(opts) {
   scene.add(light2);
 
   // create camera controller
-  var controls = this.controls = new THREE.TrackballControls(camera);
+  var controls = this.controls = 
+    new THREE.TrackballControls(camera, this.domElement);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 1.0;
   controls.panSpeed = 0.8;
