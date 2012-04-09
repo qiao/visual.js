@@ -9,6 +9,14 @@ Visual.Primitive = function(scene, opts) {
 Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
+  _updateMesh: function() {
+    // all subclasses must define the `_buildMesh` method
+    var mesh = this._buildMesh();
+    this.scene.remove(this);
+    this.mesh = mesh;
+    this.scene.add(this);
+  },
+
   get pos() {
     return this._pos;
   },

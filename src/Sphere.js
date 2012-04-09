@@ -4,7 +4,7 @@ Visual.Sphere = function(scene, opts) {
 
   this._radius = opts.radius || 1;
 
-  this._buildMesh();
+  this.mesh = this._buildMesh();
 };
 
 Visual.Sphere.prototype = new Visual.Primitive();
@@ -15,13 +15,7 @@ Visual.Sphere.prototype._buildMesh = function() {
   var material = new THREE.MeshLambertMaterial({ color: this.color });
   var mesh = new THREE.Mesh(geometry, material);
   mesh.position = this.pos;
-  if (this.mesh) {
-    this.scene.remove(this);
-    this.mesh = mesh;
-    this.scene.add(this);
-  } else {
-    this.mesh = mesh;
-  }
+  return mesh;
 };
 
 Object.defineProperties(Visual.Sphere.prototype, {
@@ -31,7 +25,7 @@ Object.defineProperties(Visual.Sphere.prototype, {
     },
     set: function(v) { 
       this._radius = v;
-      this._buildMesh();
+      this._updateMesh();
     }
   }
 });

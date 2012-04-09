@@ -65,6 +65,7 @@ Visual.Scene.registerObject = function(name, constructor) {
 };
 
 Visual.Scene.prototype = {
+
   constructor: Visual.Scene,
 
   add: function(obj) {

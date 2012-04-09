@@ -881,6 +881,7 @@ Visual.Scene.registerObject = function(name, constructor) {
 };
 
 Visual.Scene.prototype = {
+
   constructor: Visual.Scene,
 
   add: function(obj) {
@@ -946,6 +947,14 @@ Visual.Primitive = function(scene, opts) {
 Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
+  _updateMesh: function() {
+    // all subclasses must define the `_buildMesh` method
+    var mesh = this._buildMesh();
+    this.scene.remove(this);
+    this.mesh = mesh;
+    this.scene.add(this);
+  },
+
   get pos() {
     return this._pos;
   },
@@ -984,19 +993,52 @@ Visual.Box = function(scene, opts) {
   opts = opts || {};
   Visual.Primitive.call(this, scene, opts);
 
-  var length = opts.length || 1;
-  var height = opts.height || 1;
-  var width = opts.width || 1;
+  this._length = opts.length || 1;
+  this._height = opts.height || 1;
+  this._width  = opts.width  || 1;
 
-  var geometry = new THREE.CubeGeometry(length, height, width, 1, 1, 1);
-  var material = new THREE.MeshLambertMaterial({ color: this.color });
-  var mesh = new THREE.Mesh(geometry, material);
-  mesh.position = this.pos;
-  this.mesh = mesh;
+  this.mesh = this._buildMesh();
 };
 
 Visual.Box.prototype = new Visual.Primitive();
 Visual.Box.prototype.constructor = Visual.Box;
+
+Visual.Box.prototype._buildMesh = function() {
+  var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
+  var material = new THREE.MeshLambertMaterial({ color: this.color });
+  var mesh = new THREE.Mesh(geometry, material);
+  return mesh;
+};
+
+Object.defineProperties(Visual.Box.prototype, {
+  length: {
+    get: function() {
+      return this._length;
+    },
+    set: function(v) {
+      this._length = v;
+      this._updateMesh();
+    }
+  }, 
+  height: {
+    get: function() {
+      return this._height;
+    },
+    set: function(v) {
+      this._height = v;
+      this._updateMesh();
+    }
+  },
+  width: {
+    get: function() {
+      return this._width;
+    },
+    set: function(v) {
+      this._width = v;
+      this._updateMesh();
+    }
+  }
+});
 
 Visual.Scene.registerObject('box', Visual.Box);
 Visual.Sphere = function(scene, opts) {
@@ -1005,7 +1047,7 @@ Visual.Sphere = function(scene, opts) {
 
   this._radius = opts.radius || 1;
 
-  this._buildMesh();
+  this.mesh = this._buildMesh();
 };
 
 Visual.Sphere.prototype = new Visual.Primitive();
@@ -1016,13 +1058,7 @@ Visual.Sphere.prototype._buildMesh = function() {
   var material = new THREE.MeshLambertMaterial({ color: this.color });
   var mesh = new THREE.Mesh(geometry, material);
   mesh.position = this.pos;
-  if (this.mesh) {
-    this.scene.remove(this);
-    this.mesh = mesh;
-    this.scene.add(this);
-  } else {
-    this.mesh = mesh;
-  }
+  return mesh;
 };
 
 Object.defineProperties(Visual.Sphere.prototype, {
@@ -1032,7 +1068,7 @@ Object.defineProperties(Visual.Sphere.prototype, {
     },
     set: function(v) { 
       this._radius = v;
-      this._buildMesh();
+      this._updateMesh();
     }
   }
 });
