@@ -1,7 +1,7 @@
 Visual.Scene = function(opts) {
   opts = opts || {};
   // setup scene parameters
-  this.domElement  = opts.domElement || document.body;
+  this.container   = opts.container  || document.body;
   this._width      = opts.width      || 640;
   this._height     = opts.height     || 480;
   this._center     = opts.center     || new Visual.Vector(0, 0, 0);
@@ -12,11 +12,13 @@ Visual.Scene = function(opts) {
   this._foreground = opts.foreground || 0xff0000;
   this._background = opts.background || 0x000000;
 
-  this.autocenter  = opts.autocenter || true;
-  this.autoscale   = opts.autoscale  || true;
-  this.userzoom    = opts.userzoom   || true;
-  this.userspin    = opts.userspin   || true;
+  this.autocenter  = typeof opts.autocenter !== 'undefined' ? opts.autocenter : true;
+  this.autoscale   = typeof opts.autoscale  !== 'undefined' ? opts.autoscale  : true;
+  this.userzoom    = typeof opts.userzoom   !== 'undefined' ? opts.userzoom   : true;
+  this.userspin    = typeof opts.userspin   !== 'undefined' ? opts.userspin   : true;
 
+  this.objects     = [];
+  this.boundRadius = 0;
 
   // create scene
   var scene = this.scene = new THREE.Scene();
@@ -25,15 +27,16 @@ Visual.Scene = function(opts) {
   var camera = this.camera = new THREE.PerspectiveCamera(
     this.fov, this._width / this._height, 1, 100000
   );
-  camera.position.set(10, 3, 10);
-  camera.lookAt(this._center);
   scene.add(camera);
+  camera.position.set(0, 6, 0)
+  camera.lookAt(new THREE.Vector3(0, 0, 0))
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setClearColor(this._background, 1);
   renderer.setSize(this._width, this._height);
-  this.domElement.appendChild(renderer.domElement);
+  this.domElement = renderer.domElement;
+  this.container.appendChild(this.domElement);
 
   // create lights
   var ambient = new THREE.AmbientLight(0x111111);
@@ -70,19 +73,20 @@ Visual.Scene.prototype = {
   constructor: Visual.Scene,
 
   add: function(obj) {
-    this.scene.add(obj.mesh);
+    if (this.objects.indexOf(obj) === -1) {
+      this.objects.push(obj);
+      this.scene.add(obj.mesh);
+    }
   },
 
   remove: function(obj) {
-    this.scene.remove(obj.mesh);
+    var i = this.objects.indexOf(obj);
+    if (i !== -1) {
+      this.objects.splice(i, 1);
+      this.scene.remove(obj.mesh);
+    }
   },
 
-  get center() {
-    return this.controls.target;
-  },
-  set center(v) {
-    this.camera.lookAt(v);
-  },
 
   renderLoop: function() {
     var self = this;
@@ -92,7 +96,7 @@ Visual.Scene.prototype = {
       // update camera
       self.controls.update();
       if (self.autocenter || self.autoscale) {
-        self._calculateExtent();
+        self._computeBoundRadius();
       }
       if (self.autocenter) { 
         self._adjustCenter();
@@ -101,22 +105,67 @@ Visual.Scene.prototype = {
         self._adjustScale();
       }
 
+      // clear flags
+      self._centerDirty = false;
+      self._forwardDirty = false;
+
       // render
       self.renderer.clear();
       self.renderer.render(self.scene, self.camera);
     })();
   },
 
-  _calculateExtent: function() {
-  
+  _computeBoundRadius: function() {
+    var objects = this.objects;
+    var center = this.center;
+    var maxRadius = 0;
+    for (var i = 0, l = objects.length; i < l; ++i) {
+      var object = objects[i];
+      var radius = object.pos.clone().subSelf(center).length() +
+                   object.mesh.boundRadius;
+      if (radius > maxRadius) {
+        maxRadius = radius;
+      }
+    }
+    this._maxBoundRadiusIncreased = (this._maxBoundRadius || 0) < maxRadius;
+    if (this._maxBoundRadiusIncreased) {
+      this._maxBoundRadius = maxRadius;
+    }
+    this.boundRadius = maxRadius;
   },
 
   _adjustCenter: function() {
-
   },
 
   _adjustScale: function() {
-  
+    if (!this._centerDirty && !this._forwardDirty && !this._maxBoundRadiusIncreased) {
+      return;
+    }
+    var range = this.boundRadius / Math.tan(this.fov / 2 * Math.PI / 180) + this.boundRadius;
+    var offset = this.forward.clone().multiplyScalar(-range);
+    var position = this.center.clone().addSelf(offset);
+    this.camera.position.copy(position);
+    this.camera.lookAt(this.center);
+  },
+
+  get center() {
+    return this.controls.target;
+  },
+  set center(v) {
+    this.camera.lookAt(v);
+  },
+
+  get fov() {
+    return this._fov;
+  },
+
+  get forward() {
+    return this._forward;
+  },
+  set forward(v) {
+    this._forwardDirty = true;
+    this._forward = v;
+    //XXX: update camera
   },
 
   
