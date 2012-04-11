@@ -828,10 +828,10 @@ Visual.Scene = function(opts) {
   this._foreground = opts.foreground || 0xff0000;
   this._background = opts.background || 0x000000;
 
-  this.autocenter  = typeof opts.autocenter !== 'undefined' ? opts.autocenter : true;
-  this.autoscale   = typeof opts.autoscale  !== 'undefined' ? opts.autoscale  : true;
-  this.userzoom    = typeof opts.userzoom   !== 'undefined' ? opts.userzoom   : true;
-  this.userspin    = typeof opts.userspin   !== 'undefined' ? opts.userspin   : true;
+  this.autocenter  = opts.autocenter !== undefined ? opts.autocenter : true;
+  this.autoscale   = opts.autoscale  !== undefined ? opts.autoscale  : true;
+  this.userzoom    = opts.userzoom   !== undefined ? opts.userzoom   : true;
+  this.userspin    = opts.userspin   !== undefined ? opts.userspin   : true;
 
   this.objects     = [];
   this.boundRadius = 0;
@@ -986,7 +986,7 @@ Visual.Scene.prototype = {
 
   
 };
-Visual.Primitive = function(scene, opts) {
+Visual.BaseObject = function(scene, opts) {
   scene = scene || {};
   opts = opts || {};
   this.scene = scene;
@@ -994,8 +994,8 @@ Visual.Primitive = function(scene, opts) {
   this._color = opts.color || scene.foreground;
 };
 
-Visual.Primitive.prototype = {
-  constructor: Visual.Primitive,
+Visual.BaseObject.prototype = {
+  constructor: Visual.BaseObject,
 
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method
@@ -1041,7 +1041,7 @@ Visual.Primitive.prototype = {
 };
 Visual.Box = function(scene, opts) {
   opts = opts || {};
-  Visual.Primitive.call(this, scene, opts);
+  Visual.BaseObject.call(this, scene, opts);
 
   this._length = opts.length || 1;
   this._height = opts.height || 1;
@@ -1050,7 +1050,7 @@ Visual.Box = function(scene, opts) {
   this.mesh = this._buildMesh();
 };
 
-Visual.Box.prototype = new Visual.Primitive();
+Visual.Box.prototype = new Visual.BaseObject();
 Visual.Box.prototype.constructor = Visual.Box;
 
 Visual.Box.prototype._buildMesh = function() {
@@ -1093,14 +1093,14 @@ Object.defineProperties(Visual.Box.prototype, {
 Visual.Scene.registerObject('box', Visual.Box);
 Visual.Sphere = function(scene, opts) {
   opts = opts || {};
-  Visual.Primitive.call(this, scene, opts);
+  Visual.BaseObject.call(this, scene, opts);
 
   this._radius = opts.radius || 1;
 
   this.mesh = this._buildMesh();
 };
 
-Visual.Sphere.prototype = new Visual.Primitive();
+Visual.Sphere.prototype = new Visual.BaseObject();
 Visual.Sphere.prototype.constructor = Visual.Sphere;
 
 Visual.Sphere.prototype._buildMesh = function() {

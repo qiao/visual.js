@@ -1,6 +1,6 @@
 Visual.Box = function(scene, opts) {
   opts = opts || {};
-  Visual.Primitive.call(this, scene, opts);
+  Visual.BaseObject.call(this, scene, opts);
 
   this._length = opts.length || 1;
   this._height = opts.height || 1;
@@ -9,7 +9,7 @@ Visual.Box = function(scene, opts) {
   this.mesh = this._buildMesh();
 };
 
-Visual.Box.prototype = new Visual.Primitive();
+Visual.Box.prototype = new Visual.BaseObject();
 Visual.Box.prototype.constructor = Visual.Box;
 
 Visual.Box.prototype._buildMesh = function() {

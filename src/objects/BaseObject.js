@@ -1,4 +1,4 @@
-Visual.Primitive = function(scene, opts) {
+Visual.BaseObject = function(scene, opts) {
   scene = scene || {};
   opts = opts || {};
   this.scene = scene;
@@ -6,8 +6,8 @@ Visual.Primitive = function(scene, opts) {
   this._color = opts.color || scene.foreground;
 };
 
-Visual.Primitive.prototype = {
-  constructor: Visual.Primitive,
+Visual.BaseObject.prototype = {
+  constructor: Visual.BaseObject,
 
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method

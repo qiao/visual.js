@@ -1,13 +1,13 @@
 Visual.Sphere = function(scene, opts) {
   opts = opts || {};
-  Visual.Primitive.call(this, scene, opts);
+  Visual.BaseObject.call(this, scene, opts);
 
   this._radius = opts.radius || 1;
 
   this.mesh = this._buildMesh();
 };
 
-Visual.Sphere.prototype = new Visual.Primitive();
+Visual.Sphere.prototype = new Visual.BaseObject();
 Visual.Sphere.prototype.constructor = Visual.Sphere;
 
 Visual.Sphere.prototype._buildMesh = function() {
