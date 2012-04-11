@@ -12,10 +12,10 @@ Visual.Scene = function(opts) {
   this._foreground = opts.foreground || 0xff0000;
   this._background = opts.background || 0x000000;
 
-  this.autocenter  = !!opts.autocenter;
-  this.autoscale   = !!opts.autoscale;
-  this.userzoom    = !!opts.userzoom;
-  this.userspin    = !!opts.userspin;
+  this.autocenter  = opts.autocenter !== undefined ? opts.autocenter : true;
+  this.autoscale   = opts.autoscale  !== undefined ? opts.autoscale  : true;
+  this.userzoom    = opts.userzoom   !== undefined ? opts.userzoom   : true;
+  this.userspin    = opts.userspin   !== undefined ? opts.userspin   : true;
 
   this.objects     = [];
   this.boundRadius = 0;
@@ -49,14 +49,9 @@ Visual.Scene = function(opts) {
   scene.add(light2);
 
   // create camera controller
-  var controls = this.controls = 
-    new THREE.TrackballControls(camera, this.domElement);
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.0;
-  controls.panSpeed = 0.8;
-  controls.noZoom = false;
-  controls.noPan = false;
+  this.controller = new Visual.Controller(this);
 
+  // enter render loop
   this.renderLoop();
 };
 
@@ -94,7 +89,7 @@ Visual.Scene.prototype = {
       requestAnimationFrame(loop);
       
       // update camera
-      self.controls.update();
+      self.controller.update();
       if (self.autocenter || self.autoscale) {
         self._computeBoundRadius();
       }
@@ -117,7 +112,7 @@ Visual.Scene.prototype = {
 
   _computeBoundRadius: function() {
     var objects = this.objects;
-    var center = this.center;
+    var center = this._center;
     var maxRadius = 0;
     for (var i = 0, l = objects.length; i < l; ++i) {
       var object = objects[i];
@@ -143,13 +138,13 @@ Visual.Scene.prototype = {
     }
     var range = this.boundRadius / Math.tan(this.fov / 2 * Math.PI / 180) + this.boundRadius;
     var offset = this.forward.clone().multiplyScalar(-range);
-    var position = this.center.clone().addSelf(offset);
+    var position = this._center.clone().addSelf(offset);
     this.camera.position.copy(position);
-    this.camera.lookAt(this.center);
+    this.camera.lookAt(this._center);
   },
 
   get center() {
-    return this.controls.target;
+    return this._center;
   },
   set center(v) {
     this.camera.lookAt(v);
@@ -157,6 +152,10 @@ Visual.Scene.prototype = {
 
   get fov() {
     return this._fov;
+  },
+  set fov(v) {
+    this._fov = this.camera.fov = v;
+    this.camera.updateProjectionMatrix();
   },
 
   get forward() {
