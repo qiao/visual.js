@@ -12,10 +12,10 @@ Visual.Scene = function(opts) {
   this._foreground = opts.foreground || 0xff0000;
   this._background = opts.background || 0x000000;
 
-  this.autocenter  = typeof opts.autocenter !== 'undefined' ? opts.autocenter : true;
-  this.autoscale   = typeof opts.autoscale  !== 'undefined' ? opts.autoscale  : true;
-  this.userzoom    = typeof opts.userzoom   !== 'undefined' ? opts.userzoom   : true;
-  this.userspin    = typeof opts.userspin   !== 'undefined' ? opts.userspin   : true;
+  this.autocenter  = opts.autocenter !== undefined ? opts.autocenter : true;
+  this.autoscale   = opts.autoscale  !== undefined ? opts.autoscale  : true;
+  this.userzoom    = opts.userzoom   !== undefined ? opts.userzoom   : true;
+  this.userspin    = opts.userspin   !== undefined ? opts.userspin   : true;
 
   this.objects     = [];
   this.boundRadius = 0;
