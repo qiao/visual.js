@@ -159,9 +159,7 @@ Visual.Scene.prototype = {
   },
 
   _adjustToIdealScale: function() {
-    if (!(this._forwardDirty ||
-          this._centerDirty ||
-          this._maxBoundRadiusIncreased)) {
+    if (!this._maxBoundRadiusIncreased) {
       return;
     }
     var range = this._boundRadius / Math.tan(this._fov / 2 * Math.PI / 180) + this._boundRadius;
@@ -178,7 +176,7 @@ Visual.Scene.prototype = {
   },
 
   _computeBasicCameraPosition: function() {
-    var offset = this.forward.clone().multiplyScalar(-1.0 / this._scale);
+    var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
     this._basicCameraPosition = this.center.clone().addSelf(offset);
   },
 
