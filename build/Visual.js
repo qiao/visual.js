@@ -834,8 +834,6 @@ Visual.Scene = function(opts) {
   this.userZoom    = opts.userZoom   !== undefined ? opts.userZoom   : true;
   this.userSpin    = opts.userSpin   !== undefined ? opts.userSpin   : true;
 
-  this._boundRadius = 0;
-
   this.objects     = [];
 
   // create scene
