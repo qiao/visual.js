@@ -14,17 +14,6 @@ Visual.Scene = function(opts) {
   this.forward     = opts.forward    || new THREE.Vector3(0, 0, -1);
   this.up          = opts.up         || new THREE.Vector3(0, 1, 0);
 
-  // All modifications applied to the above properties will be monitored.
-  // For primitive data types, setters and getters will be used.
-  // While for complex data types, say instances of THREE.Vector3 like `center`
-  // users may try to do something like `scene.center.x += 1`. In this case, 
-  // the getter of center will be called instead of setter, and this surely
-  // is not what we desired. Therefore, we have to monitor them by recording
-  // their old values.
-  this._oldCenter  = this.center.clone();
-  this._oldForward = this.forward.clone();
-  this._oldUp      = this.up.clone();
-
   // parameters for controlling the view
   this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : true;
   this.autoScale   = opts.autoScale  !== undefined ? opts.autoScale  : true;
@@ -101,10 +90,8 @@ Visual.Scene.prototype = {
     var self = this;
     (function loop() {
       requestAnimationFrame(loop);
-      self._detectPropertyChanges();
       self._updateCamera();
       self._render();
-      self._clearFlags();
     })();
   },
 
@@ -124,34 +111,8 @@ Visual.Scene.prototype = {
       this._adjustToIdealScale();
     }
 
-    this._computeBasicCameraPosition();
+    this._setBasicCameraPosition();
     this._applyUserCameraOffset();
-  },
-
-  _detectPropertyChanges: function() {
-    this._detectForwardChange();
-    this._detectCenterChange();
-    this._detectUpChange();
-  },
-
-  _detectForwardChange: function() {
-    if (this.forward.equals(this._oldForward)) {
-      return;
-    }
-    this._oldForward.copy(this.forward);
-    this._forwardDirty = true;
-  },
-
-  _detectCenterChange: function() {
-    if (this.center.equals(this._oldCenter)) {
-      return;
-    }
-    this._oldCenter.copy(this.center);
-    this._centerDirty = true;
-  },
-
-  _detectUpChange: function() {
-  
   },
 
   _adjustToIdealCenter: function() {
@@ -170,26 +131,18 @@ Visual.Scene.prototype = {
     this._computeBoundRadius();
     this._adjustToIdealCenter();
     this._adjustToIdealScale();
-    this._computeBasicCameraPosition();
-    this.camera.position.copy(this._basicCameraPosition);
+    this._setBasicCameraPosition();
+  },
+
+  _setBasicCameraPosition: function() {
+    var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
+    this.camera.position = this.center.clone().addSelf(offset);
     this.camera.lookAt(this.center);
   },
 
-  _computeBasicCameraPosition: function() {
-    var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
-    this._basicCameraPosition = this.center.clone().addSelf(offset);
-  },
-
   _applyUserCameraOffset: function() {
-    var camera = this.camera;
-    camera.position.copy(this._basicCameraPosition);
-    camera.position.multiplyScalar(1.0 / this.interaction.scale);
-    camera.lookAt(this.center);
-  },
-
-  _clearFlags: function() {
-    this._forwardDirty = false;
-    this._scaleDirty = false;
+    this.camera.position.multiplyScalar(1.0 / this.interaction.scale);
+    this.camera.lookAt(this.center);
   },
 
   _computeBoundRadius: function() {
