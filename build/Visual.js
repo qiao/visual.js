@@ -816,25 +816,40 @@ Visual.export = function(moduleNames) {
 Visual.Vector = THREE.Vector3;
 Visual.Scene = function(opts) {
   opts = opts || {};
+
   // setup scene parameters
-  this.container   = opts.container  || document.body;
+  this._container  = opts.container  || document.body;
   this._width      = opts.width      || 640;
   this._height     = opts.height     || 480;
-  this._center     = opts.center     || new Visual.Vector(0, 0, 0);
-  this._forward    = opts.forward    || new Visual.Vector(0, 0, -1);
-  this._scale      = opts.scale      || new Visual.Vector(0.1, 0.1, 0.1);
-  this._up         = opts.up         || new Visual.Vector(0, 1, 0);
+  this._scale      = opts.scale      || 1;
   this._fov        = opts.fov        || 60;
   this._foreground = opts.foreground || 0xff0000;
   this._background = opts.background || 0x000000;
 
-  this.autocenter  = opts.autocenter !== undefined ? opts.autocenter : true;
-  this.autoscale   = opts.autoscale  !== undefined ? opts.autoscale  : true;
-  this.userzoom    = opts.userzoom   !== undefined ? opts.userzoom   : true;
-  this.userspin    = opts.userspin   !== undefined ? opts.userspin   : true;
+  this.center      = opts.center     || new THREE.Vector3(0, 0, 0);
+  this.forward     = opts.forward    || new THREE.Vector3(0, 0, -1);
+  this.up          = opts.up         || new THREE.Vector3(0, 1, 0);
+
+  // All modifications applied to the above properties will be monitored.
+  // For primitive data types, setters and getters will be used.
+  // While for complex data types, say instances of THREE.Vector3 like `center`
+  // users may try to do something like `scene.center.x += 1`. In this case, 
+  // the getter of center will be called instead of setter, and this surely
+  // is not what we desired. Therefore, we have to monitor them by recording
+  // their old values.
+  this._oldCenter  = this.center.clone();
+  this._oldForward = this.forward.clone();
+  this._oldUp      = this.up.clone();
+
+  // parameters for controlling the view
+  this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : true;
+  this.autoScale   = opts.autoScale  !== undefined ? opts.autoScale  : true;
+  this.userZoom    = opts.userZoom   !== undefined ? opts.userZoom   : true;
+  this.userSpin    = opts.userSpin   !== undefined ? opts.userSpin   : true;
+
+  this._boundRadius = 0;
 
   this.objects     = [];
-  this.boundRadius = 0;
 
   // create scene
   var scene = this.scene = new THREE.Scene();
@@ -843,16 +858,17 @@ Visual.Scene = function(opts) {
   var camera = this.camera = new THREE.PerspectiveCamera(
     this.fov, this._width / this._height, 1, 100000
   );
+  camera.position = this.center.clone().subSelf(
+    this.forward.clone().normalize().multiplyScalar(this._scale))
   scene.add(camera);
-  camera.position.set(0, 6, 0)
-  camera.lookAt(new THREE.Vector3(0, 0, 0))
+  this._initCameraPosition();
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setClearColor(this._background, 1);
   renderer.setSize(this._width, this._height);
-  this.domElement = renderer.domElement;
-  this.container.appendChild(this.domElement);
+  var domElement = this.domElement = renderer.domElement;
+  this._container.appendChild(domElement);
 
   // create lights
   var ambient = new THREE.AmbientLight(0x111111);
@@ -864,16 +880,11 @@ Visual.Scene = function(opts) {
   light2.position.set(-4, -1, 2).normalize();
   scene.add(light2);
 
-  // create camera controller
-  var controls = this.controls = 
-    new THREE.TrackballControls(camera, this.domElement);
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.0;
-  controls.panSpeed = 0.8;
-  controls.noZoom = false;
-  controls.noPan = false;
+  // create user interaction controller
+  this.interaction = new Visual.Interaction(domElement);
 
-  this.renderLoop();
+  // enter render loop
+  this._renderLoop();
 };
 
 Visual.Scene.registerObject = function(name, constructor) {
@@ -885,7 +896,6 @@ Visual.Scene.registerObject = function(name, constructor) {
 };
 
 Visual.Scene.prototype = {
-
   constructor: Visual.Scene,
 
   add: function(obj) {
@@ -903,32 +913,101 @@ Visual.Scene.prototype = {
     }
   },
 
-
-  renderLoop: function() {
+  _renderLoop: function() {
     var self = this;
     (function loop() {
       requestAnimationFrame(loop);
-      
-      // update camera
-      self.controls.update();
-      if (self.autocenter || self.autoscale) {
-        self._computeBoundRadius();
-      }
-      if (self.autocenter) { 
-        self._adjustCenter();
-      }
-      if (self.autoscale) {
-        self._adjustScale();
-      }
-
-      // clear flags
-      self._centerDirty = false;
-      self._forwardDirty = false;
-
-      // render
-      self.renderer.clear();
-      self.renderer.render(self.scene, self.camera);
+      self._detectPropertyChanges();
+      self._updateCamera();
+      self._render();
+      self._clearFlags();
     })();
+  },
+
+  _render: function() {
+    this.renderer.clear();
+    this.renderer.render(this.scene, this.camera);
+  },
+
+  _updateCamera: function() {
+    if (this.autoCenter || this.autoScale) {
+      this._computeBoundRadius();
+    }
+    if (this.autoCenter) { 
+      this._adjustToIdealCenter();
+    }
+    if (this.autoScale) {
+      this._adjustToIdealScale();
+    }
+
+    this._computeBasicCameraPosition();
+    this._applyUserCameraOffset();
+  },
+
+  _detectPropertyChanges: function() {
+    this._detectForwardChange();
+    this._detectCenterChange();
+    this._detectUpChange();
+  },
+
+  _detectForwardChange: function() {
+    if (this.forward.equals(this._oldForward)) {
+      return;
+    }
+    this._oldForward.copy(this.forward);
+    this._forwardDirty = true;
+  },
+
+  _detectCenterChange: function() {
+    if (this.center.equals(this._oldCenter)) {
+      return;
+    }
+    this._oldCenter.copy(this.center);
+    this._centerDirty = true;
+  },
+
+  _detectUpChange: function() {
+  
+  },
+
+  _adjustToIdealCenter: function() {
+  
+  },
+
+  _adjustToIdealScale: function() {
+    if (!(this._forwardDirty ||
+          this._centerDirty ||
+          this._maxBoundRadiusIncreased)) {
+      return;
+    }
+    var range = this._boundRadius / Math.tan(this._fov / 2 * Math.PI / 180) + this._boundRadius;
+    this._scale = 1.0 / range;
+  },
+
+  _initCameraPosition: function() {
+    this._computeBoundRadius();
+    this._adjustToIdealCenter();
+    this._adjustToIdealScale();
+    this._computeBasicCameraPosition();
+    this.camera.position.copy(this._basicCameraPosition);
+    this.camera.lookAt(this.center);
+  },
+
+  _computeBasicCameraPosition: function() {
+    var offset = this.forward.clone().multiplyScalar(-1.0 / this._scale);
+    this._basicCameraPosition = this.center.clone().addSelf(offset);
+  },
+
+  _applyUserCameraOffset: function() {
+    var camera = this.camera;
+    camera.position.copy(this._basicCameraPosition);
+    camera.position.multiplyScalar(1.0 / this.interaction.scale);
+    camera.lookAt(this.center);
+  },
+
+  _clearFlags: function() {
+    this._forwardDirty = false;
+    this._scaleDirty = false;
   },
 
   _computeBoundRadius: function() {
@@ -947,44 +1026,108 @@ Visual.Scene.prototype = {
     if (this._maxBoundRadiusIncreased) {
       this._maxBoundRadius = maxRadius;
     }
-    this.boundRadius = maxRadius;
-  },
-
-  _adjustCenter: function() {
-  },
-
-  _adjustScale: function() {
-    if (!this._centerDirty && !this._forwardDirty && !this._maxBoundRadiusIncreased) {
-      return;
-    }
-    var range = this.boundRadius / Math.tan(this.fov / 2 * Math.PI / 180) + this.boundRadius;
-    var offset = this.forward.clone().multiplyScalar(-range);
-    var position = this.center.clone().addSelf(offset);
-    this.camera.position.copy(position);
-    this.camera.lookAt(this.center);
-  },
-
-  get center() {
-    return this.controls.target;
-  },
-  set center(v) {
-    this.camera.lookAt(v);
+    this._boundRadius = maxRadius;
   },
 
   get fov() {
     return this._fov;
   },
-
-  get forward() {
-    return this._forward;
-  },
-  set forward(v) {
-    this._forwardDirty = true;
-    this._forward = v;
-    //XXX: update camera
+  set fov(v) {
+    this._fov = this.camera.fov = v;
+    this.camera.updateProjectionMatrix();
   },
 
+  get scale() {
+    return this._scale;
+  },
+  set scale(v) {
+    this.scale = v;
+  },
+};
+Visual.Interaction = function(domElement) {
+  this.domElement   = domElement;
+
+  this.enabled      = true;
+
+  this._screen      = { width: window.innerWidth, height: window.innerHeight, 
+                        offsetLeft: 0, offsetTop: 0 };
+  this._radius      = (this._screen.width + this._screen.height) / 4;
+
+  this._STATE       = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
+  this._state       = this._STATE.NONE;
+  this.scale        = 1;
+
+  this.rotateSpeed  = 1.0;
+  this.zoomSpeed    = 1.2;
+  this.panSpeed     = 0.3;
+
+  this.noRotate     = false;
+  this.noZoom       = false;
+  this.noPan        = false;
+
+  this.staticMoving = false;
+  this.dynamicDampingFactor = 0.2;
+
+  var self = this;
+  domElement.addEventListener('contextmenu', function(event) { event.preventDefault(); }, false);
+  domElement.addEventListener('mousedown', function(event) { self._mousedown(event); }, false);
+  domElement.addEventListener('mousemove', function(event) { self._mousemove(event); }, false);
+  domElement.addEventListener('mouseup', function(event) { self._mouseup(event); }, false);
   
+  window.addEventListener('keydown', function(event) { self._keydown(event); }, false);
+};
+
+Visual.Interaction.prototype = {
+  contructor: Visual.Interaction,
+
+  _mousedown: function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    var STATE = this._STATE;
+    var state = this._state;
+
+    if (state === STATE.NONE) {
+      this.state = event.button;    
+
+      if (state === STATE.ROTATE && !this.noRotate) {
+        this._rotateStart = this._rotateEnd = 
+          this._getMouseProjectionOnBall(event.clientX, event.clientY);
+      } else if (state === STATE.ZOOM && !this.noZoom) {
+        this._zoomStart = this._zoomEnd = 
+          this._getMouseOnScreen(event.clientX, event.clientY);
+      } else if (state === STATE.PAN && !this.noPan) {
+        this._panStart = this._panEnd = 
+          this._getMouseOnScreen(event.clientX, event.clientY);
+      }
+    }
+  },
+
+  _mousemove: function(event) {
+  
+  },
+
+  _mouseup: function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  
+    this._state = this._STATE.NONE;
+  },
+
+  _keydown: function(event) {
+    switch (event.keyCode || event.which) {
+    case 38: // up
+      this.scale += 0.01;
+      break;
+    case 40: // down
+      this.scale -= 0.01;
+      break;
+    }
+  },
+
+  _keyup: function(event) {
+    this._state = this._STATE.NONE;
+  },
 };
 Visual.BaseObject = function(scene, opts) {
   scene = scene || {};
