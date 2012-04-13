@@ -111,7 +111,7 @@ Visual.Scene.prototype = {
       this._adjustToIdealScale();
     }
 
-    this._setBasicCameraPosition();
+    this._updateBasicCameraPosition();
     this._applyUserCameraOffset();
   },
 
@@ -131,10 +131,10 @@ Visual.Scene.prototype = {
     this._computeBoundRadius();
     this._adjustToIdealCenter();
     this._adjustToIdealScale();
-    this._setBasicCameraPosition();
+    this._updateBasicCameraPosition();
   },
 
-  _setBasicCameraPosition: function() {
+  _updateBasicCameraPosition: function() {
     var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
     this.camera.position = this.center.clone().addSelf(offset);
     this.camera.lookAt(this.center);
