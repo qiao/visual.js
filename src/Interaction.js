@@ -19,6 +19,10 @@ Visual.Interaction = function(domElement) {
   this.noZoom       = false;
   this.noPan        = false;
 
+  this.rotateKey    = 65; // A
+  this.zoomKey      = 83; // S
+  this.panKey       = 68; // D
+
   this.staticMoving = false;
   this.dynamicDampingFactor = 0.2;
 
@@ -27,8 +31,8 @@ Visual.Interaction = function(domElement) {
   domElement.addEventListener('mousedown', function(event) { self._mousedown(event); }, false);
   domElement.addEventListener('mousemove', function(event) { self._mousemove(event); }, false);
   domElement.addEventListener('mouseup', function(event) { self._mouseup(event); }, false);
-  
   window.addEventListener('keydown', function(event) { self._keydown(event); }, false);
+  window.addEventListener('keyup', function(event) { self._keyup(event); }, false);
 };
 
 Visual.Interaction.prototype = {
@@ -69,14 +73,31 @@ Visual.Interaction.prototype = {
   },
 
   _keydown: function(event) {
-    switch (event.keyCode || event.which) {
-    case 38: // up
-      this.scale *= 0.95;
-      break;
-    case 40: // down
-      this.scale /= 0.95;
-      break;
+    var STATE   = this._STATE;
+    var state   = this._state;
+    var keyCode = event.keyCode || event.which;
+
+    if (state !== STATE.NONE) {
+      return;
+    } else if (keyCode === this.rotateKey && !this.noRotate) {
+      this._state = STATE.ROTATE;
+    } else if (keyCode === this.zoomKey && !this.noZoom) {
+      this._state = STATE.ZOOM;
+    } else if (keyCode === this.panKey && !this.noPan) {
+      this._state = STATE.PAN;
     }
+    if (state !== STATE.NONE) {
+      this._keyPressed = true;     
+    }
+
+    //switch (event.keyCode || event.which) {
+    //case 38: // up
+      //this.scale *= 0.95;
+      //break;
+    //case 40: // down
+      //this.scale /= 0.95;
+      //break;
+    //}
   },
 
   _keyup: function(event) {
