@@ -31,10 +31,8 @@ Visual.Scene = function(opts) {
   var camera = this.camera = new THREE.PerspectiveCamera(
     this.fov, this._width / this._height, 1, 100000
   );
-  camera.position = this.center.clone().subSelf(
-    this.forward.clone().normalize().multiplyScalar(this._scale))
-  scene.add(camera);
   this._initCameraPosition();
+  scene.add(camera);
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
