@@ -797,22 +797,20 @@ function Visual(opts) {
 }
 
 Visual.export = function(moduleNames) {
-  // get all module names
-  var allNames = [];
-  for (var k in Visual) {
-    if (Object.hasOwnProperty.call(Visual, k)) {
-      allNames.append(k);
-    }
-  }
+  var allNames = Object.keys(Visual);
+
   // if no argument is given, then export all modules
   if (typeof moduleNames === 'undefined') {
     moduleNames = allNames;
   }
+
   // export modules
   moduleNames.forEach(function(name) {
-    window[name] = Visual[name];
+    if (allNames.indexOf(name) !== -1) {
+      window[name] = Visual[name];
+    }
   });
-}
+};
 Visual.Vector = THREE.Vector3;
 Visual.Scene = function(opts) {
   opts = opts || {};
@@ -829,17 +827,6 @@ Visual.Scene = function(opts) {
   this.center      = opts.center     || new THREE.Vector3(0, 0, 0);
   this.forward     = opts.forward    || new THREE.Vector3(0, 0, -1);
   this.up          = opts.up         || new THREE.Vector3(0, 1, 0);
-
-  // All modifications applied to the above properties will be monitored.
-  // For primitive data types, setters and getters will be used.
-  // While for complex data types, say instances of THREE.Vector3 like `center`
-  // users may try to do something like `scene.center.x += 1`. In this case, 
-  // the getter of center will be called instead of setter, and this surely
-  // is not what we desired. Therefore, we have to monitor them by recording
-  // their old values.
-  this._oldCenter  = this.center.clone();
-  this._oldForward = this.forward.clone();
-  this._oldUp      = this.up.clone();
 
   // parameters for controlling the view
   this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : true;
@@ -858,10 +845,8 @@ Visual.Scene = function(opts) {
   var camera = this.camera = new THREE.PerspectiveCamera(
     this.fov, this._width / this._height, 1, 100000
   );
-  camera.position = this.center.clone().subSelf(
-    this.forward.clone().normalize().multiplyScalar(this._scale))
-  scene.add(camera);
   this._initCameraPosition();
+  scene.add(camera);
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -917,10 +902,8 @@ Visual.Scene.prototype = {
     var self = this;
     (function loop() {
       requestAnimationFrame(loop);
-      self._detectPropertyChanges();
       self._updateCamera();
       self._render();
-      self._clearFlags();
     })();
   },
 
@@ -940,34 +923,8 @@ Visual.Scene.prototype = {
       this._adjustToIdealScale();
     }
 
-    this._computeBasicCameraPosition();
+    this._updateBasicCameraPosition();
     this._applyUserCameraOffset();
-  },
-
-  _detectPropertyChanges: function() {
-    this._detectForwardChange();
-    this._detectCenterChange();
-    this._detectUpChange();
-  },
-
-  _detectForwardChange: function() {
-    if (this.forward.equals(this._oldForward)) {
-      return;
-    }
-    this._oldForward.copy(this.forward);
-    this._forwardDirty = true;
-  },
-
-  _detectCenterChange: function() {
-    if (this.center.equals(this._oldCenter)) {
-      return;
-    }
-    this._oldCenter.copy(this.center);
-    this._centerDirty = true;
-  },
-
-  _detectUpChange: function() {
-  
   },
 
   _adjustToIdealCenter: function() {
@@ -975,9 +932,7 @@ Visual.Scene.prototype = {
   },
 
   _adjustToIdealScale: function() {
-    if (!(this._forwardDirty ||
-          this._centerDirty ||
-          this._maxBoundRadiusIncreased)) {
+    if (!this._maxBoundRadiusIncreased) {
       return;
     }
     var range = this._boundRadius / Math.tan(this._fov / 2 * Math.PI / 180) + this._boundRadius;
@@ -988,26 +943,18 @@ Visual.Scene.prototype = {
     this._computeBoundRadius();
     this._adjustToIdealCenter();
     this._adjustToIdealScale();
-    this._computeBasicCameraPosition();
-    this.camera.position.copy(this._basicCameraPosition);
+    this._updateBasicCameraPosition();
+  },
+
+  _updateBasicCameraPosition: function() {
+    var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
+    this.camera.position = this.center.clone().addSelf(offset);
     this.camera.lookAt(this.center);
   },
 
-  _computeBasicCameraPosition: function() {
-    var offset = this.forward.clone().multiplyScalar(-1.0 / this._scale);
-    this._basicCameraPosition = this.center.clone().addSelf(offset);
-  },
-
   _applyUserCameraOffset: function() {
-    var camera = this.camera;
-    camera.position.copy(this._basicCameraPosition);
-    camera.position.multiplyScalar(1.0 / this.interaction.scale);
-    camera.lookAt(this.center);
-  },
-
-  _clearFlags: function() {
-    this._forwardDirty = false;
-    this._scaleDirty = false;
+    this.camera.position.multiplyScalar(1.0 / this.interaction.scale);
+    this.camera.lookAt(this.center);
   },
 
   _computeBoundRadius: function() {
@@ -1065,6 +1012,10 @@ Visual.Interaction = function(domElement) {
   this.noZoom       = false;
   this.noPan        = false;
 
+  this.rotateKey    = 65; // A
+  this.zoomKey      = 83; // S
+  this.panKey       = 68; // D
+
   this.staticMoving = false;
   this.dynamicDampingFactor = 0.2;
 
@@ -1073,8 +1024,8 @@ Visual.Interaction = function(domElement) {
   domElement.addEventListener('mousedown', function(event) { self._mousedown(event); }, false);
   domElement.addEventListener('mousemove', function(event) { self._mousemove(event); }, false);
   domElement.addEventListener('mouseup', function(event) { self._mouseup(event); }, false);
-  
   window.addEventListener('keydown', function(event) { self._keydown(event); }, false);
+  window.addEventListener('keyup', function(event) { self._keyup(event); }, false);
 };
 
 Visual.Interaction.prototype = {
@@ -1115,14 +1066,31 @@ Visual.Interaction.prototype = {
   },
 
   _keydown: function(event) {
-    switch (event.keyCode || event.which) {
-    case 38: // up
-      this.scale += 0.01;
-      break;
-    case 40: // down
-      this.scale -= 0.01;
-      break;
+    var STATE   = this._STATE;
+    var state   = this._state;
+    var keyCode = event.keyCode || event.which;
+
+    if (state !== STATE.NONE) {
+      return;
+    } else if (keyCode === this.rotateKey && !this.noRotate) {
+      this._state = STATE.ROTATE;
+    } else if (keyCode === this.zoomKey && !this.noZoom) {
+      this._state = STATE.ZOOM;
+    } else if (keyCode === this.panKey && !this.noPan) {
+      this._state = STATE.PAN;
     }
+    if (state !== STATE.NONE) {
+      this._keyPressed = true;     
+    }
+
+    //switch (event.keyCode || event.which) {
+    //case 38: // up
+      //this.scale *= 0.95;
+      //break;
+    //case 40: // down
+      //this.scale /= 0.95;
+      //break;
+    //}
   },
 
   _keyup: function(event) {

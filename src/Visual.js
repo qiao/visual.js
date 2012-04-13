@@ -3,19 +3,17 @@ function Visual(opts) {
 }
 
 Visual.export = function(moduleNames) {
-  // get all module names
-  var allNames = [];
-  for (var k in Visual) {
-    if (Object.hasOwnProperty.call(Visual, k)) {
-      allNames.append(k);
-    }
-  }
+  var allNames = Object.keys(Visual);
+
   // if no argument is given, then export all modules
   if (typeof moduleNames === 'undefined') {
     moduleNames = allNames;
   }
+
   // export modules
   moduleNames.forEach(function(name) {
-    window[name] = Visual[name];
+    if (allNames.indexOf(name) !== -1) {
+      window[name] = Visual[name];
+    }
   });
-}
+};
