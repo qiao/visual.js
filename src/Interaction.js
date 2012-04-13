@@ -71,10 +71,10 @@ Visual.Interaction.prototype = {
   _keydown: function(event) {
     switch (event.keyCode || event.which) {
     case 38: // up
-      this.scale += 0.01;
+      this.scale *= 0.95;
       break;
     case 40: // down
-      this.scale -= 0.01;
+      this.scale /= 0.95;
       break;
     }
   },
