@@ -49,8 +49,8 @@ Visual.Scene = function(opts) {
   light2.position.set(-4, -1, 2).normalize();
   scene.add(light2);
 
-  // create user interaction controller
-  this.interaction = new Visual.Interaction(domElement);
+  // create user controller controller
+  this.controller = new Visual.Controller(camera, domElement);
 
   // enter render loop
   this._renderLoop();
@@ -131,13 +131,13 @@ Visual.Scene.prototype = {
   },
 
   _updateBasicCameraPosition: function() {
-    var offset = this.forward.clone().normalize().multiplyScalar(-1.0 / this._scale);
-    this.camera.position = this.center.clone().addSelf(offset);
+    var offset = this.forward.clone().setLength(1.0 / this._scale);
+    this.camera.position = this.center.clone().subSelf(offset);
     this.camera.lookAt(this.center);
   },
 
   _applyUserCameraOffset: function() {
-    this.camera.position.multiplyScalar(1.0 / this.interaction.scale);
+    this.controller.update();
     this.camera.lookAt(this.center);
   },
 
