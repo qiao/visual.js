@@ -66,7 +66,7 @@ Visual.Controller.prototype = {
     var newPhi = origPhi - phi;
 
     // restrict phi to be in [eps, Math.PI - eps]
-    var eps = 0.01
+    var eps = 0.01;
     if (newPhi < eps) {
       newPhi = eps;
       this._overallRotationOffset.y = 1800 * origPhi / Math.PI / 2;
@@ -100,24 +100,26 @@ Visual.Controller.prototype = {
 
   _keydown: function(event) {
     var keyCode = event.keyCode || event.which;
+    var rotateDelta = this.rotateSpeed * 20;
+    var zoomDelta = this.zoomSpeed * 0.95;
     switch (keyCode) {
     case 87: // w
-      this._overallRotationOffset.y += 20;
+      this._overallRotationOffset.y += rotateDelta;
       break;
     case 83: // s
-      this._overallRotationOffset.y -= 20;
+      this._overallRotationOffset.y -= rotateDelta;
       break;
     case 65: // a
-      this._overallRotationOffset.x += 20;
+      this._overallRotationOffset.x += rotateDelta;
       break;
     case 68: // d
-      this._overallRotationOffset.x -= 20;
+      this._overallRotationOffset.x -= rotateDelta;
       break;
     case 88: // x
-      this._scale /= 0.95;
+      this._scale /= zoomDelta;
       break;
     case 90: // z
-      this._scale *= 0.95;
+      this._scale *= zoomDelta;
       break;
     }
   },
