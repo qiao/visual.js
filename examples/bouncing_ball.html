@@ -4,12 +4,31 @@
   <meta charset="UTF-8">
   <title>Visual.js - Bouncing ball</title>
   <script type="text/javascript" src="../build/Visual.js"></script>
+  <style type="text/css">
+    body {
+      background: #000;
+      color: #eee;
+      overflow: hidden;
+    }
+    #info {
+      width: 300px;
+      text-align: center;
+      margin: 20px auto;
+    }
+    #container {
+      text-align: center;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
+  <div id="info"> Press w/a/s/d to rotate, z/x to zoom </div>
+  <div id="container"></div>
+
   <script type="text/javascript">
 
     var scene = Visual({
-      domElement: document.body, 
+      container: document.getElementById('container'),
       width: 480, 
       height: 480
     });
