@@ -49,8 +49,8 @@ Visual.Scene = function(opts) {
   light2.position.set(-4, -1, 2).normalize();
   scene.add(light2);
 
-  // create user controller controller
-  this.controller = new Visual.Controller(camera, domElement);
+  // create user controller
+  this.controller = new Visual.Controller(this);
 
   // enter render loop
   this._renderLoop();

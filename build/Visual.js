@@ -863,8 +863,8 @@ Visual.Scene = function(opts) {
   light2.position.set(-4, -1, 2).normalize();
   scene.add(light2);
 
-  // create user controller controller
-  this.controller = new Visual.Controller(camera, domElement);
+  // create user controller
+  this.controller = new Visual.Controller(this);
 
   // enter render loop
   this._renderLoop();
@@ -989,9 +989,8 @@ Visual.Scene.prototype = {
     this.scale = v;
   },
 };
-Visual.Controller = function(camera, domElement) {
-  this.camera       = camera;
-  this.domElement   = domElement;
+Visual.Controller = function(scene) {
+  this.scene = scene;
 
   this._STATE       = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
   this._state       = this._STATE.NONE;
@@ -1017,6 +1016,7 @@ Visual.Controller = function(camera, domElement) {
   this._scale = 1.0
 
   var self = this;
+  var domElement = scene.domElement;
   domElement.addEventListener('contextmenu', function(event) { event.preventDefault(); }, false);
   domElement.addEventListener('mousedown', function(event) { self._mousedown(event); }, false);
   domElement.addEventListener('mousemove', function(event) { self._mousemove(event); }, false);
@@ -1029,11 +1029,10 @@ Visual.Controller.prototype = {
   contructor: Visual.Controller,
 
   update: function() {
-    this._updateRotation();
-    this._updateScale();
-  },
+    var camera = this.scene.camera;
+    var center = this.scene.center;
 
-  _updateRotation: function() {
+    // apply rotation
     var x = this._overallRotationOffset.x;
     var y = this._overallRotationOffset.y;
 
@@ -1044,7 +1043,7 @@ Visual.Controller.prototype = {
     var theta = 2 * Math.PI * x / 1800;
     var phi   = 2 * Math.PI * y / 1800;
 
-    var pos       = this.camera.position;
+    var pos       = camera.position.clone().subSelf(center);
     var newPos    = pos.clone();
     var radius    = pos.length();
 
@@ -1069,13 +1068,14 @@ Visual.Controller.prototype = {
     newPos.x = radius * Math.sin(newPhi) * Math.sin(newTheta);
     newPos.y = radius * Math.cos(newPhi);
     newPos.z = radius * Math.sin(newPhi) * Math.cos(newTheta);
-    this.camera.position.copy(newPos);
+
+    // apply scale
+    newPos.multiplyScalar(1.0 / this._scale);
+
+    // update camera position
+    camera.position.copy(center.clone().addSelf(newPos));
   },
 
-  _updateScale: function() {
-    var scale = this._scale;
-    this.camera.position.multiplyScalar(1.0 / scale);
-  },
 
   _mousedown: function(event) {
   
