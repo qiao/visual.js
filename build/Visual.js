@@ -1037,17 +1037,21 @@ Visual.Controller.prototype = {
     var x = this._overallRotationOffset.x;
     var y = this._overallRotationOffset.y;
 
-    var theta = 2 * Math.PI * x / 1800; // an offset of 1800 will be a full circle
+    // The rotation is calculated in the spherical coordinate system
+    // theta: the angle formed by the vector and z-axis in the xz-plane
+    // phi:   the angle formed by the vector and y-axis in the xy-plane
+
+    var theta = 2 * Math.PI * x / 1800;
     var phi   = 2 * Math.PI * y / 1800;
 
     var pos       = this.camera.position;
     var newPos    = pos.clone();
     var radius    = pos.length();
 
-    var origTheta = Math.atan2(pos.z, pos.x);
-    var newTheta  = origTheta + theta;
-    newPos.z = radius * Math.sin(newTheta);
-    newPos.x = radius * Math.cos(newTheta);
+    var origTheta = Math.atan2(pos.x, pos.z);
+    var newTheta  = origTheta - theta;
+    newPos.z = radius * Math.cos(newTheta);
+    newPos.x = radius * Math.sin(newTheta);
     
     var origPhi = Math.atan2(Math.sqrt(pos.x * pos.x + pos.z * pos.z), pos.y);
     var newPhi = origPhi - phi;
@@ -1062,9 +1066,9 @@ Visual.Controller.prototype = {
       this._overallRotationOffset.y = -1800 * (Math.PI - origPhi) / Math.PI / 2;
     }
 
-    newPos.x = radius * Math.sin(newPhi) * Math.cos(newTheta);
+    newPos.x = radius * Math.sin(newPhi) * Math.sin(newTheta);
     newPos.y = radius * Math.cos(newPhi);
-    newPos.z = radius * Math.sin(newPhi) * Math.sin(newTheta);
+    newPos.z = radius * Math.sin(newPhi) * Math.cos(newTheta);
     this.camera.position.copy(newPos);
   },
 
