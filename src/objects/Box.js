@@ -1,7 +1,6 @@
 Visual.Box = function(scene, opts) {
   opts = opts || {};
 
-
   this._length = opts.length || this.axis.length();
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;

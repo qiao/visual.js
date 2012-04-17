@@ -1148,8 +1148,8 @@ Visual.BaseObject = function(scene, opts) {
 
   this.mesh  = this._buildMesh();
 
-  this.axis  = opts.axis  || new THREE.Vector3(1, 0, 0);
   this.pos   = opts.pos   || new THREE.Vector3(0, 0, 0);
+  this.axis  = opts.axis  || new THREE.Vector3(1, 0, 0);
   this.up    = opts.up    || new THREE.Vector3(0, 1, 0);
 };
 
@@ -1157,12 +1157,7 @@ Visual.BaseObject.prototype = {
   constructor: Visual.BaseObject,
 
   update: function() {
-    //this.mesh.lookAt(this._axis);
-    //this._update();
-  },
-
-  _update: function() {
-  
+    this.mesh.lookAt(this._axis);
   },
 
   _updateMesh: function() {
@@ -1210,7 +1205,7 @@ Visual.BaseObject.prototype = {
     return this._up;
   },
   set up(v) {
-    this.mesh.up = v;
+    this._up = this.mesh.up = v;
   },
 
   get color() {
@@ -1222,7 +1217,6 @@ Visual.BaseObject.prototype = {
 };
 Visual.Box = function(scene, opts) {
   opts = opts || {};
-
 
   this._length = opts.length || this.axis.length();
   this._height = opts.height || 1;
