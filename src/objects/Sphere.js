@@ -12,7 +12,7 @@ Object.defineProperties(Visual.Sphere.prototype, {
   _buildMesh: {
     value: function() {
       var geometry = new THREE.SphereGeometry(this.radius, 24, 24);
-      var material = new THREE.MeshLambertMaterial({ color: this.color });
+      var material = new THREE.MeshLambertMaterial({ color: this._color });
       var mesh = new THREE.Mesh(geometry, material);
       return mesh;
     }

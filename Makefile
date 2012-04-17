@@ -9,6 +9,7 @@ build/Visual.js: $(shell find src lib -name "*.js" -type f)
 		src/objects/Primitive.js \
 		src/objects/Box.js \
 		src/objects/Sphere.js \
+		src/objects/Cylinder.js \
 		> build/Visual.js
 
 clean:

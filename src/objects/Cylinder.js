@@ -1,24 +1,25 @@
-Visual.Box = function(scene, opts) {
+Visual.Cylinder = function(scene, opts) {
   opts = opts || {};
 
   this._length = opts.length || 1;
-  this._height = opts.height || 1;
-  this._width  = opts.width  || 1;
+  this._radius = opts.radius || 1;
 
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Box, Visual.Primitive);
+Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
 
-Object.defineProperties(Visual.Box.prototype, {
+Object.defineProperties(Visual.Cylinder.prototype, {
   _buildMesh: {
     value: function() {
-      var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
+      var geometry = new THREE.CylinderGeometry(this._radius, this._radius, this._length, 24);
       var material = new THREE.MeshLambertMaterial({ color: this._color });
       var mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = -Math.PI / 2;
       return mesh;
-    }
+    },
   },
+
   length: {
     get: function() {
       return this._length;
@@ -27,25 +28,23 @@ Object.defineProperties(Visual.Box.prototype, {
       this._length = v;
       this._updateMesh();
     }
-  }, 
-  height: {
+  },
+
+  radius: {
     get: function() {
-      return this._height;
+      return this._radius;
     },
     set: function(v) {
-      this._height = v;
+      this._radius = v;
       this._updateMesh();
     }
   },
-  width: {
+
+  axis: {
     get: function() {
-      return this._width;
+      return this._axis
     },
-    set: function(v) {
-      this._width = v;
-      this._updateMesh();
-    }
-  }
+  },
 });
 
-Visual.Scene.registerObject('box', Visual.Box);
+Visual.Scene.registerObject('cylinder', Visual.Cylinder);
