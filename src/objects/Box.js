@@ -1,7 +1,6 @@
 Visual.Box = function(scene, opts) {
   opts = opts || {};
 
-  this.axis    = opts.axis   || new THREE.Vector3(1, 0, 0);
 
   this._length = opts.length || this.axis.length();
   this._height = opts.height || 1;
@@ -19,11 +18,6 @@ Object.defineProperties(Visual.Box.prototype, {
       var material = new THREE.MeshLambertMaterial({ color: this.color });
       var mesh = new THREE.Mesh(geometry, material);
       return mesh;
-    }
-  },
-  update: {
-    value: function() {
-      this.mesh.lookAt(this.axis);
     }
   },
   length: {
