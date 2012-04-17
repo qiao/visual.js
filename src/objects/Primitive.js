@@ -22,6 +22,8 @@ Visual.Primitive.prototype = {
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method
     var mesh = this._buildMesh();
+    mesh.position = this.mesh.position;
+    mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
     this.mesh = mesh;
     this.scene.add(this);
@@ -71,6 +73,7 @@ Visual.Primitive.prototype = {
     return this._color;
   },
   set color(v) {
-    this._color = this.mesh.material.color = v;
+    this._color = v;
+    this.mesh.material.color.setHex(v);
   }
 };
