@@ -15,7 +15,8 @@ Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
   update: function() {
-    this.mesh.lookAt(this._axis);
+    var target = this._pos.clone().addSelf(this._axis);
+    this.mesh.lookAt(target);
   },
 
   _updateMesh: function() {
