@@ -12,9 +12,7 @@ Visual.Box = function(scene, opts) {
   this.mesh = this._buildMesh();
 };
 
-Visual.Box.prototype = new Visual.BaseObject();
-Visual.Box.prototype.constructor = Visual.Box;
-
+Visual.Util.inherits(Visual.Box, Visual.BaseObject);
 
 Object.defineProperties(Visual.Box.prototype, {
   _buildMesh: {

@@ -1,6 +1,7 @@
 build/Visual.js: $(shell find src lib -name "*.js" -type f)
 	@cat \
 		lib/Three.js \
+		src/Util.js \
 		src/Visual.js \
 		src/Vector.js \
 		src/Scene.js \

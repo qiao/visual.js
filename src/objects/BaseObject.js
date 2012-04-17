@@ -1,5 +1,4 @@
 Visual.BaseObject = function(scene, opts) {
-  scene = scene || {};
   opts = opts || {};
   this.scene = scene;
   this._pos = opts.pos || new Visual.Vector(0, 0, 0);

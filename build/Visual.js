@@ -792,6 +792,19 @@ THREE.ShaderFlares={lensFlareVertexTexture:{vertexShader:"uniform vec3 screenPos
 lensFlare:{vertexShader:"uniform vec3 screenPosition;\nuniform vec2 scale;\nuniform float rotation;\nuniform int renderType;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uv;\nvec2 pos = position;\nif( renderType == 2 ) {\npos.x = cos( rotation ) * position.x - sin( rotation ) * position.y;\npos.y = sin( rotation ) * position.x + cos( rotation ) * position.y;\n}\ngl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );\n}",fragmentShader:"precision mediump float;\nuniform sampler2D map;\nuniform sampler2D occlusionMap;\nuniform float opacity;\nuniform int renderType;\nuniform vec3 color;\nvarying vec2 vUV;\nvoid main() {\nif( renderType == 0 ) {\ngl_FragColor = vec4( texture2D( map, vUV ).rgb, 0.0 );\n} else if( renderType == 1 ) {\ngl_FragColor = texture2D( map, vUV );\n} else {\nfloat visibility = texture2D( occlusionMap, vec2( 0.5, 0.1 ) ).a +\ntexture2D( occlusionMap, vec2( 0.9, 0.5 ) ).a +\ntexture2D( occlusionMap, vec2( 0.5, 0.9 ) ).a +\ntexture2D( occlusionMap, vec2( 0.1, 0.5 ) ).a;\nvisibility = ( 1.0 - visibility / 4.0 );\nvec4 texture = texture2D( map, vUV );\ntexture.a *= opacity * visibility;\ngl_FragColor = texture;\ngl_FragColor.rgb *= color;\n}\n}"}};
 THREE.ShaderSprite={sprite:{vertexShader:"uniform int useScreenCoordinates;\nuniform int affectedByDistance;\nuniform vec3 screenPosition;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform float rotation;\nuniform vec2 scale;\nuniform vec2 alignment;\nuniform vec2 uvOffset;\nuniform vec2 uvScale;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uvOffset + uv * uvScale;\nvec2 alignedPosition = position + alignment;\nvec2 rotatedPosition;\nrotatedPosition.x = ( cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y ) * scale.x;\nrotatedPosition.y = ( sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y ) * scale.y;\nvec4 finalPosition;\nif( useScreenCoordinates != 0 ) {\nfinalPosition = vec4( screenPosition.xy + rotatedPosition, screenPosition.z, 1.0 );\n} else {\nfinalPosition = projectionMatrix * modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\nfinalPosition.xy += rotatedPosition * ( affectedByDistance == 1 ? 1.0 : finalPosition.z );\n}\ngl_Position = finalPosition;\n}",
 fragmentShader:"precision mediump float;\nuniform vec3 color;\nuniform sampler2D map;\nuniform float opacity;\nvarying vec2 vUV;\nvoid main() {\nvec4 texture = texture2D( map, vUV );\ngl_FragColor = vec4( color * texture.xyz, texture.a * opacity );\n}"}};
+Visual.Util = {
+  inherits: function(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  },
+};
 function Visual(opts) {
   return new Visual.Scene(opts);
 }
@@ -1128,7 +1141,6 @@ Visual.Controller.prototype = {
   },
 };
 Visual.BaseObject = function(scene, opts) {
-  scene = scene || {};
   opts = opts || {};
   this.scene = scene;
   this._pos = opts.pos || new Visual.Vector(0, 0, 0);
@@ -1198,9 +1210,7 @@ Visual.Box = function(scene, opts) {
   this.mesh = this._buildMesh();
 };
 
-Visual.Box.prototype = new Visual.BaseObject();
-Visual.Box.prototype.constructor = Visual.Box;
-
+Visual.Util.inherits(Visual.Box, Visual.BaseObject);
 
 Object.defineProperties(Visual.Box.prototype, {
   _buildMesh: {
@@ -1255,18 +1265,18 @@ Visual.Sphere = function(scene, opts) {
   this.mesh = this._buildMesh();
 };
 
-Visual.Sphere.prototype = new Visual.BaseObject();
-Visual.Sphere.prototype.constructor = Visual.Sphere;
-
-Visual.Sphere.prototype._buildMesh = function() {
-  var geometry = new THREE.SphereGeometry(this.radius, 24, 24);
-  var material = new THREE.MeshLambertMaterial({ color: this.color });
-  var mesh = new THREE.Mesh(geometry, material);
-  mesh.position = this.pos;
-  return mesh;
-};
+Visual.Util.inherits(Visual.Sphere, Visual.BaseObject);
 
 Object.defineProperties(Visual.Sphere.prototype, {
+  _buildMesh: {
+    value: function() {
+      var geometry = new THREE.SphereGeometry(this.radius, 24, 24);
+      var material = new THREE.MeshLambertMaterial({ color: this.color });
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position = this.pos;
+      return mesh;
+    }
+  },
   radius: {
     get: function() { 
       return this._radius; 
