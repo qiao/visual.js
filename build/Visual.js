@@ -1140,7 +1140,7 @@ Visual.Controller.prototype = {
   
   },
 };
-Visual.BaseObject = function(scene, opts) {
+Visual.Primitive = function(scene, opts) {
   opts = opts || {};
   this.scene  = scene;
 
@@ -1153,8 +1153,8 @@ Visual.BaseObject = function(scene, opts) {
   this.up    = opts.up    || new THREE.Vector3(0, 1, 0);
 };
 
-Visual.BaseObject.prototype = {
-  constructor: Visual.BaseObject,
+Visual.Primitive.prototype = {
+  constructor: Visual.Primitive,
 
   update: function() {
     this.mesh.lookAt(this._axis);
@@ -1222,10 +1222,10 @@ Visual.Box = function(scene, opts) {
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;
 
-  Visual.BaseObject.call(this, scene, opts);
+  Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Box, Visual.BaseObject);
+Visual.Util.inherits(Visual.Box, Visual.Primitive);
 
 Object.defineProperties(Visual.Box.prototype, {
   _buildMesh: {
@@ -1271,10 +1271,10 @@ Visual.Sphere = function(scene, opts) {
 
   this._radius = opts.radius || 1;
 
-  Visual.BaseObject.call(this, scene, opts);
+  Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Sphere, Visual.BaseObject);
+Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
 
 Object.defineProperties(Visual.Sphere.prototype, {
   _buildMesh: {

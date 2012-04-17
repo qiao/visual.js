@@ -6,7 +6,7 @@ build/Visual.js: $(shell find src lib -name "*.js" -type f)
 		src/Vector.js \
 		src/Scene.js \
 		src/Controller.js \
-		src/objects/BaseObject.js \
+		src/objects/Primitive.js \
 		src/objects/Box.js \
 		src/objects/Sphere.js \
 		> build/Visual.js

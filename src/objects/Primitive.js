@@ -1,4 +1,4 @@
-Visual.BaseObject = function(scene, opts) {
+Visual.Primitive = function(scene, opts) {
   opts = opts || {};
   this.scene  = scene;
 
@@ -11,8 +11,8 @@ Visual.BaseObject = function(scene, opts) {
   this.up    = opts.up    || new THREE.Vector3(0, 1, 0);
 };
 
-Visual.BaseObject.prototype = {
-  constructor: Visual.BaseObject,
+Visual.Primitive.prototype = {
+  constructor: Visual.Primitive,
 
   update: function() {
     this.mesh.lookAt(this._axis);

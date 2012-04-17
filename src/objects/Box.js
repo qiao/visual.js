@@ -5,10 +5,10 @@ Visual.Box = function(scene, opts) {
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;
 
-  Visual.BaseObject.call(this, scene, opts);
+  Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Box, Visual.BaseObject);
+Visual.Util.inherits(Visual.Box, Visual.Primitive);
 
 Object.defineProperties(Visual.Box.prototype, {
   _buildMesh: {

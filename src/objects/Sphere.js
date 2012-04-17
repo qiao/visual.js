@@ -3,10 +3,10 @@ Visual.Sphere = function(scene, opts) {
 
   this._radius = opts.radius || 1;
 
-  Visual.BaseObject.call(this, scene, opts);
+  Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Sphere, Visual.BaseObject);
+Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
 
 Object.defineProperties(Visual.Sphere.prototype, {
   _buildMesh: {
