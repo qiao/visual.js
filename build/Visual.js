@@ -1164,6 +1164,8 @@ Visual.Primitive.prototype = {
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method
     var mesh = this._buildMesh();
+    mesh.position = this.mesh.position;
+    mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
     this.mesh = mesh;
     this.scene.add(this);
@@ -1213,7 +1215,8 @@ Visual.Primitive.prototype = {
     return this._color;
   },
   set color(v) {
-    this._color = this.mesh.material.color = v;
+    this._color = v;
+    this.mesh.material.color.setHex(v);
   }
 };
 Visual.Box = function(scene, opts) {
@@ -1313,9 +1316,19 @@ Object.defineProperties(Visual.Cylinder.prototype, {
   _buildMesh: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(this._radius, this._radius, this._length, 24);
+      var vertices = geometry.vertices;
+      // rotate all the vertices to align the axis of the cylinder with the x-axis.
+      var rotationMatrix = new THREE.Matrix4();
+      var axis = new THREE.Vector3(1, 0, 0);
+      var angle = -Math.PI / 2;
+      rotationMatrix.setRotationAxis(axis, angle);
+      for (var i = 0, l = vertices.length; i < l; ++i) {
+        rotationMatrix.multiplyVector3(vertices[i].position);
+      }
+      geometry.computeFaceNormals();
+
       var material = new THREE.MeshLambertMaterial({ color: this._color });
       var mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.z = -Math.PI / 2;
       return mesh;
     },
   },
@@ -1338,12 +1351,6 @@ Object.defineProperties(Visual.Cylinder.prototype, {
       this._radius = v;
       this._updateMesh();
     }
-  },
-
-  axis: {
-    get: function() {
-      return this._axis
-    },
   },
 });
 
