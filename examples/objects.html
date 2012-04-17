@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual.js - Objects</title>
+  <script type="text/javascript" src="../build/Visual.js"></script>
+  <style type="text/css">
+    body {
+      background: #000;
+      color: #eee;
+      overflow: hidden;
+    }
+    #info {
+      width: 300px;
+      text-align: center;
+      margin: 20px auto;
+    }
+    #container {
+      text-align: center;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script type="text/javascript">
+
+    var scene = Visual({
+      container: document.getElementById('container'),
+    });  
+
+    var box = scene.box({
+      pos: new THREE.Vector3(-4, 0, 0)
+    });
+    
+    var sphere = scene.sphere({
+      pos: new THREE.Vector3(0, 0, 0)
+    });
+
+    var cylinder = scene.cylinder({
+      pos: new THREE.Vector3(4, 0, 0)
+    });
+
+  </script>
+</body>
+</html>
