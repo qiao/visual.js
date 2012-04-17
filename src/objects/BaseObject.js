@@ -1,8 +1,11 @@
 Visual.BaseObject = function(scene, opts) {
   opts = opts || {};
   this.scene = scene;
-  this._pos = opts.pos || new Visual.Vector(0, 0, 0);
   this._color = opts.color || scene.foreground;
+
+  this.mesh = this._buildMesh();
+  this.pos  = opts.pos || new THREE.Vector3(0, 0, 0);
+  this.up   = opts.up  || new THREE.Vector3(0, 1, 0);
 };
 
 Visual.BaseObject.prototype = {
@@ -21,10 +24,9 @@ Visual.BaseObject.prototype = {
   },
 
   get pos() {
-    return this._pos;
+    return this.mesh.position;
   },
   set pos(v) {
-    this._pos = v;
     this.mesh.position = v;
   },
 
@@ -45,6 +47,13 @@ Visual.BaseObject.prototype = {
   },
   set z(v) {
     this.pos.z = v;
+  },
+
+  get up() {
+    return this.mesh.up;
+  },
+  set up(v) {
+    this.mesh.up = v;
   },
 
   get color() {

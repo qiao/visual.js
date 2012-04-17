@@ -1143,8 +1143,11 @@ Visual.Controller.prototype = {
 Visual.BaseObject = function(scene, opts) {
   opts = opts || {};
   this.scene = scene;
-  this._pos = opts.pos || new Visual.Vector(0, 0, 0);
   this._color = opts.color || scene.foreground;
+
+  this.mesh = this._buildMesh();
+  this.pos  = opts.pos || new THREE.Vector3(0, 0, 0);
+  this.up   = opts.up  || new THREE.Vector3(0, 1, 0);
 };
 
 Visual.BaseObject.prototype = {
@@ -1163,10 +1166,9 @@ Visual.BaseObject.prototype = {
   },
 
   get pos() {
-    return this._pos;
+    return this.mesh.position;
   },
   set pos(v) {
-    this._pos = v;
     this.mesh.position = v;
   },
 
@@ -1189,6 +1191,13 @@ Visual.BaseObject.prototype = {
     this.pos.z = v;
   },
 
+  get up() {
+    return this.mesh.up;
+  },
+  set up(v) {
+    this.mesh.up = v;
+  },
+
   get color() {
     return this._color;
   },
@@ -1198,7 +1207,6 @@ Visual.BaseObject.prototype = {
 };
 Visual.Box = function(scene, opts) {
   opts = opts || {};
-  Visual.BaseObject.call(this, scene, opts);
 
   this.axis    = opts.axis   || new THREE.Vector3(1, 0, 0);
 
@@ -1206,8 +1214,7 @@ Visual.Box = function(scene, opts) {
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;
 
-
-  this.mesh = this._buildMesh();
+  Visual.BaseObject.call(this, scene, opts);
 };
 
 Visual.Util.inherits(Visual.Box, Visual.BaseObject);
@@ -1258,11 +1265,10 @@ Object.defineProperties(Visual.Box.prototype, {
 Visual.Scene.registerObject('box', Visual.Box);
 Visual.Sphere = function(scene, opts) {
   opts = opts || {};
-  Visual.BaseObject.call(this, scene, opts);
 
   this._radius = opts.radius || 1;
 
-  this.mesh = this._buildMesh();
+  Visual.BaseObject.call(this, scene, opts);
 };
 
 Visual.Util.inherits(Visual.Sphere, Visual.BaseObject);
@@ -1273,7 +1279,6 @@ Object.defineProperties(Visual.Sphere.prototype, {
       var geometry = new THREE.SphereGeometry(this.radius, 24, 24);
       var material = new THREE.MeshLambertMaterial({ color: this.color });
       var mesh = new THREE.Mesh(geometry, material);
-      mesh.position = this.pos;
       return mesh;
     }
   },

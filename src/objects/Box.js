@@ -1,6 +1,5 @@
 Visual.Box = function(scene, opts) {
   opts = opts || {};
-  Visual.BaseObject.call(this, scene, opts);
 
   this.axis    = opts.axis   || new THREE.Vector3(1, 0, 0);
 
@@ -8,8 +7,7 @@ Visual.Box = function(scene, opts) {
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;
 
-
-  this.mesh = this._buildMesh();
+  Visual.BaseObject.call(this, scene, opts);
 };
 
 Visual.Util.inherits(Visual.Box, Visual.BaseObject);
