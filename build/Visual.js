@@ -900,6 +900,7 @@ Visual.Scene.prototype = {
     var self = this;
     (function loop() {
       requestAnimationFrame(loop);
+      self._updateObjects();
       self._updateCamera();
       self._render();
     })();
@@ -908,6 +909,13 @@ Visual.Scene.prototype = {
   _render: function() {
     this.renderer.clear();
     this.renderer.render(this.scene, this.camera);
+  },
+
+  _updateObjects: function() {
+    var objects = this.objects;
+    for (var i = 0, l = objects.length; i < l; ++i) {
+      objects[i].update();
+    }
   },
 
   _updateCamera: function() {
@@ -1130,6 +1138,10 @@ Visual.BaseObject = function(scene, opts) {
 Visual.BaseObject.prototype = {
   constructor: Visual.BaseObject,
 
+  update: function() {
+  
+  },
+
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method
     var mesh = this._buildMesh();
@@ -1176,9 +1188,12 @@ Visual.Box = function(scene, opts) {
   opts = opts || {};
   Visual.BaseObject.call(this, scene, opts);
 
-  this._length = opts.length || 1;
+  this.axis    = opts.axis   || new THREE.Vector3(1, 0, 0);
+
+  this._length = opts.length || this.axis.length();
   this._height = opts.height || 1;
   this._width  = opts.width  || 1;
+
 
   this.mesh = this._buildMesh();
 };
@@ -1186,14 +1201,21 @@ Visual.Box = function(scene, opts) {
 Visual.Box.prototype = new Visual.BaseObject();
 Visual.Box.prototype.constructor = Visual.Box;
 
-Visual.Box.prototype._buildMesh = function() {
-  var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
-  var material = new THREE.MeshLambertMaterial({ color: this.color });
-  var mesh = new THREE.Mesh(geometry, material);
-  return mesh;
-};
 
 Object.defineProperties(Visual.Box.prototype, {
+  _buildMesh: {
+    value: function() {
+      var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
+      var material = new THREE.MeshLambertMaterial({ color: this.color });
+      var mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+    }
+  },
+  update: {
+    value: function() {
+      this.mesh.lookAt(this.axis);
+    }
+  },
   length: {
     get: function() {
       return this._length;

@@ -86,6 +86,7 @@ Visual.Scene.prototype = {
     var self = this;
     (function loop() {
       requestAnimationFrame(loop);
+      self._updateObjects();
       self._updateCamera();
       self._render();
     })();
@@ -94,6 +95,13 @@ Visual.Scene.prototype = {
   _render: function() {
     this.renderer.clear();
     this.renderer.render(this.scene, this.camera);
+  },
+
+  _updateObjects: function() {
+    var objects = this.objects;
+    for (var i = 0, l = objects.length; i < l; ++i) {
+      objects[i].update();
+    }
   },
 
   _updateCamera: function() {

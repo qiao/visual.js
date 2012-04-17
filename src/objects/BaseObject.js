@@ -9,6 +9,10 @@ Visual.BaseObject = function(scene, opts) {
 Visual.BaseObject.prototype = {
   constructor: Visual.BaseObject,
 
+  update: function() {
+  
+  },
+
   _updateMesh: function() {
     // all subclasses must define the `_buildMesh` method
     var mesh = this._buildMesh();
