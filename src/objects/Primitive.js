@@ -1,10 +1,11 @@
 Visual.Primitive = function(scene, opts) {
   opts = opts || {};
-  this.scene  = scene;
 
-  var material = this._material = new THREE.MeshLambertMaterial({
+  this.scene = scene;
+
+  var material = new THREE.MeshLambertMaterial({
     color     : opts.color || scene.foreground,
-    wireframe : opts.wireframe
+    wireframe : !!opts.wireframe
   });
   var geometry = this._buildGeometry();
   this.mesh = new THREE.Mesh(geometry, material);
@@ -18,13 +19,13 @@ Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
   update: function() {
-    var target = this._pos.clone().addSelf(this._axis);
+    var target = this.mesh.position.clone().addSelf(this._axis);
     this.mesh.lookAt(target);
   },
 
   _updateMesh: function() {
     var geometry = this._buildGeometry();
-    var mesh = new THREE.Mesh(geometry, this._material);
+    var mesh = new THREE.Mesh(geometry, this.mesh.material);
     mesh.position = this.mesh.position;
     mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
@@ -33,29 +34,29 @@ Visual.Primitive.prototype = {
   },
 
   get pos() {
-    return this._pos;
+    return this.mesh.position;
   },
   set pos(v) {
-    this._pos = this.mesh.position = v;
+    this.mesh.position = v;
   },
 
   get x() {
-    return this._pos.x;
+    return this.mesh.position.x;
   },
   set x(v) {
-    this._pos.x = v;
+    this.mesh.position.x = v;
   },
   get y() {
-    return this._pos.y;
+    return this.mesh.position.y;
   },
   set y(v) {
-    this._pos.y = v;
+    this.mesh.position.y = v;
   },
   get z() {
-    return this._pos.z;
+    return this.mesh.position.z;
   },
   set z(v) {
-    this._pos.z = v;
+    this.mesh.position.z = v;
   },
 
   get axis() {
@@ -73,17 +74,16 @@ Visual.Primitive.prototype = {
   },
 
   get color() {
-    return this._color;
+    return this.mesh.material.color.getHex;
   },
   set color(v) {
-    this._color = v;
     this.mesh.material.color.setHex(v);
   },
   
   get wireframe() {
-    return this._wireframe;
+    return this.mesh.material.wireframe;
   },
   set wireframe(v) {
-    this._wireframe = this.mesh.material.wireframe = v;
+    this.mesh.material.wireframe = v;
   },
 };
