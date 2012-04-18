@@ -24,6 +24,9 @@ Object.defineProperties(Visual.Cylinder.prototype, {
       var rotationMatrix = new THREE.Matrix4();
       rotationMatrix.setRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
       geometry.applyMatrix(rotationMatrix);
+      var translationMatrix = new THREE.Matrix4();
+      translationMatrix.setTranslation(0, 0, this._length / 2);
+      geometry.applyMatrix(translationMatrix);
 
       return geometry;
     },
