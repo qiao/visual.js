@@ -7,7 +7,7 @@ Visual.Primitive = function(scene, opts) {
   this.mesh  = this._buildMesh();
 
   this.pos   = opts.pos   || new THREE.Vector3(0, 0, 0);
-  this.axis  = opts.axis  || new THREE.Vector3(1, 0, 0);
+  this.axis  = opts.axis  || new THREE.Vector3(0, 0, 1);
   this.up    = opts.up    || new THREE.Vector3(0, 1, 0);
 };
 

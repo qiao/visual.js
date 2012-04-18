@@ -14,13 +14,16 @@ Object.defineProperties(Visual.Cylinder.prototype, {
     value: function() {
       var geometry = new THREE.CylinderGeometry(this._radius, this._radius, this._length, 24);
       var vertices = geometry.vertices;
-      // rotate all the vertices to align the axis of the cylinder with the x-axis.
+      // rotate all the vertices to align the axis of the cylinder with the z-axis.
+      // and move the center of the bottom to be at <0, 0, 0>
       var rotationMatrix = new THREE.Matrix4();
       var axis = new THREE.Vector3(1, 0, 0);
       var angle = -Math.PI / 2;
       rotationMatrix.setRotationAxis(axis, angle);
       for (var i = 0, l = vertices.length; i < l; ++i) {
-        rotationMatrix.multiplyVector3(vertices[i].position);
+        var position = vertices[i].position;
+        rotationMatrix.multiplyVector3(position);
+        position.z += this._length / 2;
       }
       geometry.computeFaceNormals();
 
