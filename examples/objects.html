@@ -10,15 +10,6 @@
       color: #eee;
       overflow: hidden;
     }
-    #info {
-      width: 300px;
-      text-align: center;
-      margin: 20px auto;
-    }
-    #container {
-      text-align: center;
-      margin: 0 auto;
-    }
   </style>
 </head>
 <body>
@@ -26,7 +17,9 @@
   <script type="text/javascript">
 
     var scene = Visual({
-      container: document.getElementById('container'),
+      container : document.body,
+      width     : window.innerWidth,
+      height    : window.innerHeight
     });  
 
     var box = scene.box({
@@ -39,6 +32,10 @@
 
     var cylinder = scene.cylinder({
       pos: new THREE.Vector3(4, 0, 0)
+    });
+
+    var cone = scene.cone({
+      pos: new THREE.Vector3(-4, 0, 4)
     });
 
   </script>
