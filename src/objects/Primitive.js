@@ -3,6 +3,7 @@ Visual.Primitive = function(scene, opts) {
   this.scene  = scene;
 
   this._color = opts.color || scene.foreground;
+  this._wireframe = opts.wireframe;
 
   this.mesh  = this._buildMesh();
 
@@ -75,5 +76,12 @@ Visual.Primitive.prototype = {
   set color(v) {
     this._color = v;
     this.mesh.material.color.setHex(v);
-  }
+  },
+  
+  get wireframe() {
+    return this._wireframe;
+  },
+  set wireframe(v) {
+    this._wireframe = this.mesh.material.wireframe = v;
+  },
 };
