@@ -11,12 +11,10 @@ Visual.Box = function(scene, opts) {
 Visual.Util.inherits(Visual.Box, Visual.Primitive);
 
 Object.defineProperties(Visual.Box.prototype, {
-  _buildMesh: {
+  _buildGeometry: {
     value: function() {
       var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
-      var material = new THREE.MeshLambertMaterial({ color: this._color });
-      var mesh = new THREE.Mesh(geometry, material);
-      return mesh;
+      return geometry;
     }
   },
   length: {

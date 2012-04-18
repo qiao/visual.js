@@ -1144,9 +1144,12 @@ Visual.Primitive = function(scene, opts) {
   opts = opts || {};
   this.scene  = scene;
 
-  this._color = opts.color || scene.foreground;
-
-  this.mesh  = this._buildMesh();
+  var material = this._material = new THREE.MeshLambertMaterial({
+    color     : opts.color || scene.foreground,
+    wireframe : opts.wireframe
+  });
+  var geometry = this._buildGeometry();
+  this.mesh = new THREE.Mesh(geometry, material);
 
   this.pos   = opts.pos   || new THREE.Vector3(0, 0, 0);
   this.axis  = opts.axis  || new THREE.Vector3(0, 0, 1);
@@ -1162,8 +1165,8 @@ Visual.Primitive.prototype = {
   },
 
   _updateMesh: function() {
-    // all subclasses must define the `_buildMesh` method
-    var mesh = this._buildMesh();
+    var geometry = this._buildGeometry();
+    var mesh = new THREE.Mesh(geometry, this._material);
     mesh.position = this.mesh.position;
     mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
@@ -1217,7 +1220,14 @@ Visual.Primitive.prototype = {
   set color(v) {
     this._color = v;
     this.mesh.material.color.setHex(v);
-  }
+  },
+  
+  get wireframe() {
+    return this._wireframe;
+  },
+  set wireframe(v) {
+    this._wireframe = this.mesh.material.wireframe = v;
+  },
 };
 Visual.Box = function(scene, opts) {
   opts = opts || {};
@@ -1232,12 +1242,10 @@ Visual.Box = function(scene, opts) {
 Visual.Util.inherits(Visual.Box, Visual.Primitive);
 
 Object.defineProperties(Visual.Box.prototype, {
-  _buildMesh: {
+  _buildGeometry: {
     value: function() {
       var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
-      var material = new THREE.MeshLambertMaterial({ color: this._color });
-      var mesh = new THREE.Mesh(geometry, material);
-      return mesh;
+      return geometry;
     }
   },
   length: {
@@ -1281,12 +1289,10 @@ Visual.Sphere = function(scene, opts) {
 Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
 
 Object.defineProperties(Visual.Sphere.prototype, {
-  _buildMesh: {
+  _buildGeometry: {
     value: function() {
-      var geometry = new THREE.SphereGeometry(this.radius, 24, 24);
-      var material = new THREE.MeshLambertMaterial({ color: this._color });
-      var mesh = new THREE.Mesh(geometry, material);
-      return mesh;
+      var geometry = new THREE.SphereGeometry(this._radius, 24, 24);
+      return geometry;
     }
   },
   radius: {
@@ -1309,7 +1315,7 @@ Visual.Cylinder = function(scene, opts) {
 
   // for deriving into cones and pyramids
   this._topRadius    = opts.topRadius !== undefined ? opts.topRadius : this._radius;
-  this._segments     = opts.segments || 24;
+  this._segments     = opts.segments || 32;
 
   Visual.Primitive.call(this, scene, opts);
 };
@@ -1317,31 +1323,18 @@ Visual.Cylinder = function(scene, opts) {
 Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
 
 Object.defineProperties(Visual.Cylinder.prototype, {
-  _buildMesh: {
+  _buildGeometry: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
         this._topRadius, this._radius, this._length, this._segments
       );
-      var vertices = geometry.vertices;
       // rotate all the vertices to align the axis of the cylinder with the z-axis.
       // and move the center of the bottom to be at <0, 0, 0>
       var rotationMatrix = new THREE.Matrix4();
-      var axis = new THREE.Vector3(1, 0, 0);
-      var angle = Math.PI / 2;
-      rotationMatrix.setRotationAxis(axis, angle);
-      for (var i = 0, l = vertices.length; i < l; ++i) {
-        var position = vertices[i].position;
-        rotationMatrix.multiplyVector3(position);
-        position.z += this._length / 2;
-      }
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-      geometry.__dirtyVertices = true;
-      geometry.__dirtyNormals = true;
+      rotationMatrix.setRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+      geometry.applyMatrix(rotationMatrix);
 
-      var material = new THREE.MeshLambertMaterial({ color: this._color });
-      var mesh = new THREE.Mesh(geometry, material);
-      return mesh;
+      return geometry;
     },
   },
 

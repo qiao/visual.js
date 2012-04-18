@@ -2,10 +2,12 @@ Visual.Primitive = function(scene, opts) {
   opts = opts || {};
   this.scene  = scene;
 
-  this._color = opts.color || scene.foreground;
-  this._wireframe = opts.wireframe;
-
-  this.mesh  = this._buildMesh();
+  var material = this._material = new THREE.MeshLambertMaterial({
+    color     : opts.color || scene.foreground,
+    wireframe : opts.wireframe
+  });
+  var geometry = this._buildGeometry();
+  this.mesh = new THREE.Mesh(geometry, material);
 
   this.pos   = opts.pos   || new THREE.Vector3(0, 0, 0);
   this.axis  = opts.axis  || new THREE.Vector3(0, 0, 1);
@@ -21,8 +23,8 @@ Visual.Primitive.prototype = {
   },
 
   _updateMesh: function() {
-    // all subclasses must define the `_buildMesh` method
-    var mesh = this._buildMesh();
+    var geometry = this._buildGeometry();
+    var mesh = new THREE.Mesh(geometry, this._material);
     mesh.position = this.mesh.position;
     mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
