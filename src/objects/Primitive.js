@@ -67,10 +67,10 @@ Visual.Primitive.prototype = {
   },
 
   get up() {
-    return this._up;
+    return this.mesh.up;
   },
   set up(v) {
-    this._up = this.mesh.up = v;
+    this.mesh.up = v;
   },
 
   get color() {
