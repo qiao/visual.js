@@ -13,7 +13,7 @@ Visual.Util.inherits(Visual.Box, Visual.Primitive);
 Object.defineProperties(Visual.Box.prototype, {
   _buildGeometry: {
     value: function() {
-      var geometry = new THREE.CubeGeometry(this._length, this._height, this._width, 1, 1, 1);
+      var geometry = new THREE.CubeGeometry(this._width, this._height, this._length, 1, 1, 1);
       return geometry;
     }
   },
