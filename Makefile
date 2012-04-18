@@ -1,4 +1,8 @@
-build/Visual.js: $(shell find src lib -name "*.js" -type f)
+TARGET = build/Visual.js
+
+all: $(TARGET)
+
+$(TARGET): $(shell find src lib -name "*.js" -type f)
 	@cat \
 		lib/Three.js \
 		src/Util.js \
@@ -11,9 +15,15 @@ build/Visual.js: $(shell find src lib -name "*.js" -type f)
 		src/objects/Sphere.js \
 		src/objects/Cylinder.js \
 		src/objects/Cone.js \
-		> build/Visual.js
+		> $(TARGET)
+
+watch:
+	@watch -n0.5 $(MAKE)
+
+minify:
+	@uglifyjs -o $(TARGET) $(TARGET)
 
 clean:
-	@rm -f build/Visual.js
+	@rm -f $(TARGET)
 
-.PHONY: clean
+.PHONY: watch minify clean
