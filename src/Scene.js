@@ -52,6 +52,16 @@ Visual.Scene = function(opts) {
   // create user controller
   this.controller = new Visual.Controller(this);
 
+  // create stats
+  if (opts.showStats) {
+    var stats = this.stats = new Stats();
+    var domElement = stats.domElement;
+    domElement.style.position = 'absolute';
+    domElement.style.top = '0px';
+    domElement.style.left = '0px';
+    this._container.appendChild(domElement);
+  }
+
   // enter render loop
   this._renderLoop();
 };
@@ -88,6 +98,7 @@ Visual.Scene.prototype = {
       requestAnimationFrame(loop);
       self._updateObjects();
       self._updateCamera();
+      self._updateStats();
       self._render();
     })();
   },
@@ -117,6 +128,12 @@ Visual.Scene.prototype = {
 
     this._updateBasicCameraPosition();
     this._applyUserCameraOffset();
+  },
+
+  _updateStats: function() {
+    if (this.stats) {
+      this.stats.update();
+    }
   },
 
   _adjustToIdealCenter: function() {
