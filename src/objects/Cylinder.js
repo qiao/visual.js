@@ -4,7 +4,7 @@ Visual.Cylinder = function(scene, opts) {
   this._length       = opts.length || 1;
   this._radius       = opts.radius || 1;
 
-  // for deriving into cones and pyramids
+  // for deriving into cones
   this._topRadius    = opts.topRadius !== undefined ? opts.topRadius : this._radius;
   this._segments     = opts.segments || 32;
 
