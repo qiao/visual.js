@@ -53,6 +53,33 @@ Object.defineProperties(Visual.Pyramid.prototype, {
       return geometry;
     }
   },
+  width: {
+    get: function() {
+      return this._width;
+    },
+    set: function(v) {
+      this._width = v;
+      this._updateMesh();
+    }
+  },
+  height: {
+    get: function() {
+      return this._height;
+    },
+    set: function(v) {
+      this._height = v;
+      this._updateMesh();
+    }
+  },
+  length: {
+    get: function() {
+      return this._length;
+    },
+    set: function(v) {
+      this._length = v;
+      this._updateMesh();
+    }
+  },
 });
 
 Visual.Scene.registerObject('pyramid', Visual.Pyramid);
