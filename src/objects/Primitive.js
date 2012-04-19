@@ -4,15 +4,15 @@ Visual.Primitive = function(scene, opts) {
   this.scene = scene;
 
   var material = new THREE.MeshLambertMaterial({
-    color     : opts.color || scene.foreground,
+    color     : opts.color !== undefined ? opts.color : scene.foreground,
     wireframe : !!opts.wireframe
   });
   var geometry = this._buildGeometry();
   this.mesh = new THREE.Mesh(geometry, material);
 
-  this.pos   = opts.pos   || new THREE.Vector3(0, 0, 0);
-  this.axis  = opts.axis  || new THREE.Vector3(1, 0, 0);
-  this.up    = opts.up    || new THREE.Vector3(0, 1, 0);
+  this.pos  = opts.pos  || new THREE.Vector3(0, 0, 0);
+  this.axis = opts.axis || new THREE.Vector3(1, 0, 0);
+  this.up   = opts.up   || new THREE.Vector3(0, 1, 0);
 };
 
 Visual.Primitive.prototype = {
