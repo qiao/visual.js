@@ -7,8 +7,9 @@ Visual.Scene = function(opts) {
   this._height     = opts.height     || 480;
   this._scale      = opts.scale      || 1;
   this._fov        = opts.fov        || 60;
-  this._foreground = opts.foreground || 0xff0000;
-  this._background = opts.background || 0x000000;
+
+  this.foreground  = opts.foreground || 0xffffff;
+  this.background  = opts.background || 0x000000;
 
   this.center      = opts.center     || new THREE.Vector3(0, 0, 0);
   this.forward     = opts.forward    || new THREE.Vector3(0, 0, -1);
@@ -34,7 +35,7 @@ Visual.Scene = function(opts) {
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setClearColor(this._background, 1);
+  renderer.setClearColor(this.background, 1);
   renderer.setSize(this._width, this._height);
   var domElement = this.domElement = renderer.domElement;
   this._container.appendChild(domElement);

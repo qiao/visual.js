@@ -1,18 +1,21 @@
 Visual.Primitive = function(scene, opts) {
   opts = opts || {};
 
-  this.scene = scene;
+  this.scene     = scene;
 
-  var material = new THREE.MeshLambertMaterial({
-    color     : opts.color !== undefined ? opts.color : scene.foreground,
-    wireframe : !!opts.wireframe
-  });
-  var geometry = this._buildGeometry();
-  this.mesh = new THREE.Mesh(geometry, material);
+  var material   = new THREE.MeshLambertMaterial();
+  var geometry   = this._buildGeometry();
+  this.mesh      = new THREE.Mesh(geometry, material);
 
-  this.pos  = opts.pos  || new THREE.Vector3(0, 0, 0);
-  this.axis = opts.axis || new THREE.Vector3(1, 0, 0);
-  this.up   = opts.up   || new THREE.Vector3(0, 1, 0);
+  this.pos       = opts.pos     || new THREE.Vector3(0, 0, 0);
+  this.axis      = opts.axis    || new THREE.Vector3(1, 0, 0);
+  this.up        = opts.up      || new THREE.Vector3(0, 1, 0);
+
+  this.opacity   = opts.opacity !== undefined ? opts.opacity : 1;
+  this.visible   = opts.visible !== undefined ? opts.visible : true;
+  this.color     = opts.color   !== undefined ? opts.color   : scene.foreground;
+
+  this.wireframe = !!opts.wireframe;
 };
 
 Visual.Primitive.prototype = {
@@ -74,7 +77,7 @@ Visual.Primitive.prototype = {
   },
 
   get color() {
-    return this.mesh.material.color.getHex;
+    return this.mesh.material.color.getHex();
   },
   set color(v) {
     this.mesh.material.color.setHex(v);
@@ -85,5 +88,19 @@ Visual.Primitive.prototype = {
   },
   set wireframe(v) {
     this.mesh.material.wireframe = v;
+  },
+
+  get visible() {
+    return this.mesh.visible;
+  },
+  set visible(v) {
+    this.mesh.visible = v;
+  },
+
+  get opacity() {
+    return this.mesh.material.opacity;
+  },
+  set opacity(v) {
+    this.mesh.material.opacity = v;
   },
 };
