@@ -10,4 +10,11 @@ Visual.Util = {
       }
     });
   },
+  toVector3: function(vec3) {
+    if (vec3 instanceof THREE.Vector3) {
+      return vec3;
+    }
+    // assuming vec3 is an array-like object
+    return new THREE.Vector3(vec3[0], vec3[1], vec3[2]);
+  },
 };

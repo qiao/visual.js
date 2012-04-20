@@ -5,6 +5,8 @@ function Visual(opts) {
 
   opts = opts || {};
 
+  var toV3 = Visual.Util.toVector3;
+
   // setup scene parameters
   this._container  = opts.container  || document.body;
   this._width      = opts.width      || 640;
@@ -15,9 +17,9 @@ function Visual(opts) {
   this.foreground  = opts.foreground || 0xffffff;
   this.background  = opts.background || 0x000000;
 
-  this.center      = opts.center     || new THREE.Vector3(0, 0, 0);
-  this.forward     = opts.forward    || new THREE.Vector3(0, 0, -1);
-  this.up          = opts.up         || new THREE.Vector3(0, 1, 0);
+  this.center      = opts.center     ? toV3(opts.center)  : new THREE.Vector3(0, 0, 0);
+  this.forward     = opts.forward    ? toV3(opts.forward) : new THREE.Vector3(0, 0, -1);
+  this.up          = opts.up         ? toV3(opts.up)      : new THREE.Vector3(0, 1, 0);
 
   // parameters for controlling the view
   this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : false;

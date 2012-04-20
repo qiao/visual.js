@@ -1,3 +1,7 @@
+;(function() {
+
+var toV3 = Visual.Util.toVector3;
+
 Visual.Primitive = function(scene, opts) {
   opts = opts || {};
 
@@ -7,9 +11,9 @@ Visual.Primitive = function(scene, opts) {
   var geometry   = this._buildGeometry();
   this.mesh      = new THREE.Mesh(geometry, material);
 
-  this.pos       = opts.pos     || new THREE.Vector3(0, 0, 0);
-  this.axis      = opts.axis    || new THREE.Vector3(1, 0, 0);
-  this.up        = opts.up      || new THREE.Vector3(0, 1, 0);
+  this.pos       = opts.pos  || new THREE.Vector3(0, 0, 0);
+  this.axis      = opts.axis || new THREE.Vector3(1, 0, 0);
+  this.up        = opts.up   || new THREE.Vector3(0, 1, 0);
 
   this.opacity   = opts.opacity !== undefined ? opts.opacity : 1;
   this.visible   = opts.visible !== undefined ? opts.visible : true;
@@ -22,7 +26,7 @@ Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
   update: function() {
-    var target = this.mesh.position.clone().addSelf(this.axis);
+    var target = this.mesh.position.clone().addSelf(this._axis);
     this.mesh.lookAt(target);
   },
 
@@ -40,7 +44,7 @@ Visual.Primitive.prototype = {
     return this.mesh.position;
   },
   set pos(v) {
-    this.mesh.position = v;
+    this.mesh.position = toV3(v);
   },
 
   get x() {
@@ -66,7 +70,14 @@ Visual.Primitive.prototype = {
     return this.mesh.up;
   },
   set up(v) {
-    this.mesh.up = v;
+    this.mesh.up = toV3(v);
+  },
+
+  get axis() {
+    return this._axis;
+  },
+  set axis(v) {
+    this._axis = toV3(v);
   },
 
   get color() {
@@ -101,8 +112,8 @@ Visual.Primitive.prototype = {
     opts = opts || {};
 
     var angle  = opts.angle  !== undefined ? opts.angle : Math.PI / 4;
-    var axis   = opts.axis   || this.axis;
-    var origin = opts.origin || this.pos;
+    var axis   = opts.axis   ? toV3(opts.axis)   : this.axis;
+    var origin = opts.origin ? toV3(opts.origin) : this.pos;
 
     var dummy = new THREE.Object3D();
     dummy.position.copy(origin);
@@ -114,3 +125,5 @@ Visual.Primitive.prototype = {
     dummy.applyMatrix(rotationMatrix);
   }
 };
+
+})();
