@@ -16,7 +16,7 @@ Visual.Scene = function(opts) {
   this.up          = opts.up         || new THREE.Vector3(0, 1, 0);
 
   // parameters for controlling the view
-  this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : true;
+  this.autoCenter  = opts.autoCenter !== undefined ? opts.autoCenter : false;
   this.autoScale   = opts.autoScale  !== undefined ? opts.autoScale  : true;
   this.userZoom    = opts.userZoom   !== undefined ? opts.userZoom   : true;
   this.userSpin    = opts.userSpin   !== undefined ? opts.userSpin   : true;
