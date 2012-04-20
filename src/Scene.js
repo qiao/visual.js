@@ -5,7 +5,7 @@ Visual.Scene = function(opts) {
   this._container  = opts.container  || document.body;
   this._width      = opts.width      || 640;
   this._height     = opts.height     || 480;
-  this._scale      = opts.scale      || 1;
+  this._scale      = opts.scale      || 0.1;
   this._fov        = opts.fov        || 60;
 
   this.foreground  = opts.foreground || 0xffffff;
