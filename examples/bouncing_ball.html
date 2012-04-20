@@ -33,7 +33,7 @@
       height: 480
     });
     var box = scene.box({
-      pos: new Visual.Vector(0, 0, 0),
+      pos: new THREE.Vector3(0, 0, 0),
       length: 4,
       height: 0.5,
       width: 4,
@@ -41,11 +41,11 @@
     });
 
     var ball = scene.sphere({
-      pos: new Visual.Vector(0, 4, 0),
+      pos: new THREE.Vector3(0, 4, 0),
       radius: 1,
       color: 0xff0000
     });
-    ball.velocity = new Visual.Vector(0, -1, 0);
+    ball.velocity = new THREE.Vector3(0, -1, 0);
 
     var dt = 0.01;
     setInterval(function() {

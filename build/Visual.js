@@ -983,7 +983,6 @@ Visual.export = function(moduleNames) {
     }
   });
 };
-Visual.Vector = THREE.Vector3;
 Visual.Scene = function(opts) {
   opts = opts || {};
 
