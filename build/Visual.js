@@ -1415,6 +1415,23 @@ Visual.Primitive.prototype = {
   set opacity(v) {
     this.mesh.material.opacity = v;
   },
+
+  rotate: function(opts) {
+    opts = opts || {};
+
+    var angle  = opts.angle  !== undefined ? opts.angle : Math.PI / 4;
+    var axis   = opts.axis   || this.axis;
+    var origin = opts.origin || this.pos;
+
+    var dummy = new THREE.Object3D();
+    dummy.position.copy(origin);
+    this.scene.scene.add(dummy);
+    dummy.add(this.mesh);
+
+    var rotationMatrix = new THREE.Matrix4();
+    rotationMatrix.setRotationAxis(axis, angle);
+    dummy.applyMatrix(rotationMatrix);
+  }
 };
 Visual.Box = function(scene, opts) {
   opts = opts || {};
