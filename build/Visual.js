@@ -951,39 +951,11 @@ THREE.CylinderGeometry = function ( radiusTop, radiusBottom, height, segmentsRad
 }
 THREE.CylinderGeometry.prototype = new THREE.Geometry();
 THREE.CylinderGeometry.prototype.constructor = THREE.CylinderGeometry;
-Visual.Util = {
-  inherits: function(ctor, superCtor) {
-    ctor.super_ = superCtor;
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  },
-};
 function Visual(opts) {
-  return new Visual.Scene(opts);
-}
-
-Visual.export = function(moduleNames) {
-  var allNames = Object.keys(Visual);
-
-  // if no argument is given, then export all modules
-  if (typeof moduleNames === 'undefined') {
-    moduleNames = allNames;
+  if (!(this instanceof Visual)) {
+    return new Visual(opts);
   }
 
-  // export modules
-  moduleNames.forEach(function(name) {
-    if (allNames.indexOf(name) !== -1) {
-      window[name] = Visual[name];
-    }
-  });
-};
-Visual.Scene = function(opts) {
   opts = opts || {};
 
   // setup scene parameters
@@ -1052,16 +1024,16 @@ Visual.Scene = function(opts) {
   this._renderLoop();
 };
 
-Visual.Scene.registerObject = function(name, constructor) {
-  Visual.Scene.prototype[name] = function(opts) {
+Visual.registerObject = function(name, constructor) {
+  Visual.prototype[name] = function(opts) {
     var obj = new constructor(this, opts);
     this.add(obj);
     return obj;
   }
 };
 
-Visual.Scene.prototype = {
-  constructor: Visual.Scene,
+Visual.prototype = {
+  constructor: Visual,
 
   add: function(obj) {
     if (this.objects.indexOf(obj) === -1) {
@@ -1184,6 +1156,19 @@ Visual.Scene.prototype = {
   },
   set scale(v) {
     this.scale = v;
+  },
+};
+Visual.Util = {
+  inherits: function(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
   },
 };
 Visual.Controller = function(scene) {
@@ -1480,7 +1465,7 @@ Object.defineProperties(Visual.Box.prototype, {
   }
 });
 
-Visual.Scene.registerObject('box', Visual.Box);
+Visual.registerObject('box', Visual.Box);
 Visual.Sphere = function(scene, opts) {
   opts = opts || {};
 
@@ -1509,7 +1494,7 @@ Object.defineProperties(Visual.Sphere.prototype, {
   }
 });
 
-Visual.Scene.registerObject('sphere', Visual.Sphere);
+Visual.registerObject('sphere', Visual.Sphere);
 Visual.Cylinder = function(scene, opts) {
   opts = opts || {};
 
@@ -1565,7 +1550,7 @@ Object.defineProperties(Visual.Cylinder.prototype, {
   },
 });
 
-Visual.Scene.registerObject('cylinder', Visual.Cylinder);
+Visual.registerObject('cylinder', Visual.Cylinder);
 Visual.Cone = function(scene, opts) {
   opts = opts || {};
 
@@ -1576,7 +1561,7 @@ Visual.Cone = function(scene, opts) {
 
 Visual.Util.inherits(Visual.Cone, Visual.Cylinder);
 
-Visual.Scene.registerObject('cone', Visual.Cone);
+Visual.registerObject('cone', Visual.Cone);
 Visual.Pyramid = function(scene, opts) {
   opts = opts || {};
 
@@ -1661,7 +1646,7 @@ Object.defineProperties(Visual.Pyramid.prototype, {
   },
 });
 
-Visual.Scene.registerObject('pyramid', Visual.Pyramid);
+Visual.registerObject('pyramid', Visual.Pyramid);
 Visual.Arrow = function(scene, opts) {
   opts = opts || {};
 
@@ -1715,4 +1700,4 @@ Object.defineProperties(Visual.Arrow.prototype, {
   },
 });
 
-Visual.Scene.registerObject('arrow', Visual.Arrow);
+Visual.registerObject('arrow', Visual.Arrow);

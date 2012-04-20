@@ -82,4 +82,4 @@ Object.defineProperties(Visual.Pyramid.prototype, {
   },
 });
 
-Visual.Scene.registerObject('pyramid', Visual.Pyramid);
+Visual.registerObject('pyramid', Visual.Pyramid);

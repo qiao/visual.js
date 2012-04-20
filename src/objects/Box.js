@@ -46,4 +46,4 @@ Object.defineProperties(Visual.Box.prototype, {
   }
 });
 
-Visual.Scene.registerObject('box', Visual.Box);
+Visual.registerObject('box', Visual.Box);

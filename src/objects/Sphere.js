@@ -26,4 +26,4 @@ Object.defineProperties(Visual.Sphere.prototype, {
   }
 });
 
-Visual.Scene.registerObject('sphere', Visual.Sphere);
+Visual.registerObject('sphere', Visual.Sphere);

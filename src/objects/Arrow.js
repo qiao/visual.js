@@ -51,4 +51,4 @@ Object.defineProperties(Visual.Arrow.prototype, {
   },
 });
 
-Visual.Scene.registerObject('arrow', Visual.Arrow);
+Visual.registerObject('arrow', Visual.Arrow);

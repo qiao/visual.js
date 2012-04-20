@@ -8,4 +8,4 @@ Visual.Cone = function(scene, opts) {
 
 Visual.Util.inherits(Visual.Cone, Visual.Cylinder);
 
-Visual.Scene.registerObject('cone', Visual.Cone);
+Visual.registerObject('cone', Visual.Cone);

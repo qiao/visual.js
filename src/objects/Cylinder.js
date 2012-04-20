@@ -53,4 +53,4 @@ Object.defineProperties(Visual.Cylinder.prototype, {
   },
 });
 
-Visual.Scene.registerObject('cylinder', Visual.Cylinder);
+Visual.registerObject('cylinder', Visual.Cylinder);
