@@ -17,7 +17,7 @@ Object.defineProperties(Visual.Cylinder.prototype, {
   _buildGeometry: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
-        this._topRadius, this._radius, this._length, this._segments
+        this._topRadius, this._radius, this._length, this._segments, 4
       );
       // rotate all the vertices to align the axis of the cylinder with the z-axis.
       // and move the center of the bottom to be at <0, 0, 0>

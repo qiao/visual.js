@@ -800,6 +800,157 @@ var Stats=function(){var h,a,n=0,o=0,i=Date.now(),u=i,p=i,l=0,q=1E3,r=0,e,j,f,b=
 a.style.width="1px",a.style.height=Math.random()*30+"px",a.style.cssFloat="left",a.style.backgroundColor="rgb("+c[0][0]+","+c[0][1]+","+c[0][2]+")",g.appendChild(a);return{domElement:h,update:function(){i=Date.now();m=i-u;s=Math.min(s,m);t=Math.max(t,m);k.textContent=m+" MS ("+s+"-"+t+")";var a=Math.min(30,30-m/200*30);g.appendChild(g.firstChild).style.height=a+"px";u=i;o++;if(i>p+1E3)l=Math.round(o*1E3/(i-p)),q=Math.min(q,l),r=Math.max(r,l),j.textContent=l+" FPS ("+q+"-"+r+")",a=Math.min(30,30-l/
 100*30),f.appendChild(f.firstChild).style.height=a+"px",p=i,o=0}}};
 
+/**
+ * @author mr.doob / http://mrdoob.com/
+ * @author qiao / https://github.com/qiao
+ */
+
+THREE.CylinderGeometry = function ( radiusTop, radiusBottom, height, segmentsRadius, segmentsHeight, openEnded ) {
+
+	THREE.Geometry.call( this );
+
+	radiusTop = radiusTop !== undefined ? radiusTop : 20;
+	radiusBottom = radiusBottom !== undefined ? radiusBottom : 20;
+	height = height !== undefined ? height : 100;
+
+	var heightHalf = height / 2;
+	var segmentsX = segmentsRadius || 8;
+	var segmentsY = segmentsHeight || 1;
+
+	var x, y, vertices = [], uvs = [];
+
+	for ( y = 0; y <= segmentsY; y ++ ) {
+
+		var verticesRow = [];
+		var uvsRow = [];
+
+		var v = y / segmentsY;
+		var radius = v * ( radiusBottom - radiusTop ) + radiusTop;
+
+		for ( x = 0; x <= segmentsX; x ++ ) {
+
+			var u = x / segmentsX;
+
+			var xpos = radius * Math.sin( u * Math.PI * 2 );
+			var ypos = - v * height + heightHalf;
+			var zpos = radius * Math.cos( u * Math.PI * 2 );
+
+			this.vertices.push( new THREE.Vertex( new THREE.Vector3( xpos, ypos, zpos ) ) );
+
+			verticesRow.push( this.vertices.length - 1 );
+			uvsRow.push( new THREE.UV( u, v ) );
+
+		}
+
+		vertices.push( verticesRow );
+		uvs.push( uvsRow );
+
+	}
+
+	var tanTheta = ( radiusBottom - radiusTop ) / height;
+	var na, nb;
+
+	for ( x = 0; x < segmentsX; x ++ ) {
+
+		if ( radiusTop !== 0 ) {
+
+			na = this.vertices[ vertices[ 0 ][ x ] ].position.clone();
+			nb = this.vertices[ vertices[ 0 ][ x + 1 ] ].position.clone();
+
+		} else {
+
+			na = this.vertices[ vertices[ 1 ][ x ] ].position.clone();
+			nb = this.vertices[ vertices[ 1 ][ x + 1 ] ].position.clone();
+
+		}
+		
+		na.setY( Math.sqrt( na.x * na.x + na.z * na.z ) * tanTheta ).normalize();
+		nb.setY( Math.sqrt( nb.x * nb.x + nb.z * nb.z ) * tanTheta ).normalize();
+
+		for ( y = 0; y < segmentsY; y ++ ) {
+
+			var v1 = vertices[ y ][ x ];
+			var v2 = vertices[ y + 1 ][ x ];
+			var v3 = vertices[ y + 1 ][ x + 1 ];
+			var v4 = vertices[ y ][ x + 1 ];
+
+			var uv1 = uvs[ y ][ x ].clone();
+			var uv2 = uvs[ y + 1 ][ x ].clone();
+			var uv3 = uvs[ y + 1 ][ x + 1 ].clone();
+			var uv4 = uvs[ y ][ x + 1 ].clone();
+
+			var n1 = na.clone();
+			var n2 = na.clone();
+			var n3 = nb.clone();
+			var n4 = nb.clone();
+
+			this.faces.push( new THREE.Face4( v1, v2, v3, v4, [ n1, n2, n3, n4 ] ) );
+			this.faceVertexUvs[ 0 ].push( [ uv1, uv2, uv3, uv4 ] );
+
+		}
+
+	}
+
+	// top cap
+
+	if ( !openEnded && radiusTop > 0 ) {
+
+		this.vertices.push( new THREE.Vertex( new THREE.Vector3( 0, heightHalf, 0 ) ) );
+
+		for ( x = 0; x < segmentsX; x ++ ) {
+
+			var v1 = vertices[ 0 ][ x ];
+			var v2 = vertices[ 0 ][ x + 1 ];
+			var v3 = this.vertices.length - 1;
+
+			var n1 = new THREE.Vector3( 0, 1, 0 );
+			var n2 = new THREE.Vector3( 0, 1, 0 );
+			var n3 = new THREE.Vector3( 0, 1, 0 );
+
+			var uv1 = uvs[ 0 ][ x ].clone();
+			var uv2 = uvs[ 0 ][ x + 1 ].clone();
+			var uv3 = new THREE.UV( uv2.u, 0 );
+
+			this.faces.push( new THREE.Face3( v1, v2, v3, [ n1, n2, n3 ] ) );
+			this.faceVertexUvs[ 0 ].push( [ uv1, uv2, uv3 ] );
+
+		}
+
+	}
+
+	// bottom cap
+
+	if ( !openEnded && radiusBottom > 0 ) {
+
+		this.vertices.push( new THREE.Vertex( new THREE.Vector3( 0, - heightHalf, 0 ) ) );
+
+		for ( x = 0; x < segmentsX; x ++ ) {
+
+			var v1 = vertices[ y ][ x + 1 ];
+			var v2 = vertices[ y ][ x ];
+			var v3 = this.vertices.length - 1;
+
+			var n1 = new THREE.Vector3( 0, - 1, 0 );
+			var n2 = new THREE.Vector3( 0, - 1, 0 );
+			var n3 = new THREE.Vector3( 0, - 1, 0 );
+
+			var uv1 = uvs[ y ][ x + 1 ].clone();
+			var uv2 = uvs[ y ][ x ].clone();
+			var uv3 = new THREE.UV( uv2.u, 1 );
+
+			this.faces.push( new THREE.Face3( v1, v2, v3, [ n1, n2, n3 ] ) );
+			this.faceVertexUvs[ 0 ].push( [ uv1, uv2, uv3 ] );
+
+		}
+
+	}
+
+	this.computeCentroids();
+	this.computeFaceNormals();
+
+}
+THREE.CylinderGeometry.prototype = new THREE.Geometry();
+THREE.CylinderGeometry.prototype.constructor = THREE.CylinderGeometry;
 Visual.Util = {
   inherits: function(ctor, superCtor) {
     ctor.super_ = superCtor;
@@ -1171,7 +1322,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshPhongMaterial();
+  var material   = new THREE.MeshLambertMaterial();
   var geometry   = this._buildGeometry();
   this.mesh      = new THREE.Mesh(geometry, material);
 
@@ -1190,7 +1341,7 @@ Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
   update: function() {
-    var target = this.mesh.position.clone().addSelf(this._axis);
+    var target = this.mesh.position.clone().addSelf(this.axis);
     this.mesh.lookAt(target);
   },
 
@@ -1228,13 +1379,6 @@ Visual.Primitive.prototype = {
   },
   set z(v) {
     this.mesh.position.z = v;
-  },
-
-  get axis() {
-    return this._axis;
-  },
-  set axis(v) {
-    this._axis = v;
   },
 
   get up() {
@@ -1369,17 +1513,17 @@ Object.defineProperties(Visual.Cylinder.prototype, {
   _buildGeometry: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
-        this._topRadius, this._radius, this._length, this._segments
+        this._topRadius, this._radius, this._length, this._segments, 4
       );
       // rotate all the vertices to align the axis of the cylinder with the z-axis.
       // and move the center of the bottom to be at <0, 0, 0>
       var rotationMatrix = new THREE.Matrix4();
-      rotationMatrix.setRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+      rotationMatrix.setRotationX(Math.PI / 2);
       geometry.applyMatrix(rotationMatrix);
       var translationMatrix = new THREE.Matrix4();
       translationMatrix.setTranslation(0, 0, this._length / 2);
       geometry.applyMatrix(translationMatrix);
-
+      
       return geometry;
     },
   },

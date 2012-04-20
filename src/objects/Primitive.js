@@ -3,7 +3,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshPhongMaterial();
+  var material   = new THREE.MeshLambertMaterial();
   var geometry   = this._buildGeometry();
   this.mesh      = new THREE.Mesh(geometry, material);
 
@@ -22,7 +22,7 @@ Visual.Primitive.prototype = {
   constructor: Visual.Primitive,
 
   update: function() {
-    var target = this.mesh.position.clone().addSelf(this._axis);
+    var target = this.mesh.position.clone().addSelf(this.axis);
     this.mesh.lookAt(target);
   },
 
@@ -60,13 +60,6 @@ Visual.Primitive.prototype = {
   },
   set z(v) {
     this.mesh.position.z = v;
-  },
-
-  get axis() {
-    return this._axis;
-  },
-  set axis(v) {
-    this._axis = v;
   },
 
   get up() {
