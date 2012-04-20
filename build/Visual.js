@@ -840,7 +840,7 @@ Visual.Scene = function(opts) {
   this._container  = opts.container  || document.body;
   this._width      = opts.width      || 640;
   this._height     = opts.height     || 480;
-  this._scale      = opts.scale      || 1;
+  this._scale      = opts.scale      || 0.1;
   this._fov        = opts.fov        || 60;
 
   this.foreground  = opts.foreground || 0xffffff;
@@ -1171,7 +1171,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshLambertMaterial();
+  var material   = new THREE.MeshPhongMaterial();
   var geometry   = this._buildGeometry();
   this.mesh      = new THREE.Mesh(geometry, material);
 
@@ -1537,6 +1537,16 @@ Object.defineProperties(Visual.Arrow.prototype, {
       head.applyMatrix(rotationMatrix);
       translationMatrix.setTranslation(0, 0, headLength / 2 + shaftLength);
       head.applyMatrix(translationMatrix);
+
+      // fix head's vertex normals
+      var faces = head.faces;
+      for (var i = 0, l = faces.length; i < l; ++i) {
+        var face = faces[i];
+        var n = face.normal;
+        if (face instanceof THREE.Face4) {
+          face.vertexNormals = [n, n, n, n];
+        }
+      }
 
       THREE.GeometryUtils.merge(shaft, head);
 

@@ -34,6 +34,16 @@ Object.defineProperties(Visual.Arrow.prototype, {
       translationMatrix.setTranslation(0, 0, headLength / 2 + shaftLength);
       head.applyMatrix(translationMatrix);
 
+      // fix head's vertex normals
+      var faces = head.faces;
+      for (var i = 0, l = faces.length; i < l; ++i) {
+        var face = faces[i];
+        var n = face.normal;
+        if (face instanceof THREE.Face4) {
+          face.vertexNormals = [n, n, n, n];
+        }
+      }
+
       THREE.GeometryUtils.merge(shaft, head);
 
       return shaft;
