@@ -3,7 +3,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshLambertMaterial();
+  var material   = new THREE.MeshPhongMaterial();
   var geometry   = this._buildGeometry();
   this.mesh      = new THREE.Mesh(geometry, material);
 
