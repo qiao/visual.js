@@ -72,23 +72,21 @@
     });
 
     var velocity = new THREE.Vector3(Math.random(), Math.random(), Math.random());
-    var dt = 0.01;
-    var limit = bounding / 2 - 0.5;
+    var limit = bounding / 2 - 0.5 - ball.radius;
 
-    function step() {
+    (function step() {
+      requestAnimationFrame(step);
       ball.pos.addSelf(velocity);
       if (Math.abs(ball.pos.x) > limit) {
-        velocity.x = -velocity.x;
+        velocity.x *= -1;
       }
       if (Math.abs(ball.pos.y) > limit) {
-        velocity.y = -velocity.y;
+        velocity.y *= -1;
       }
       if (Math.abs(ball.pos.z) > limit) {
-        velocity.z = -velocity.z;
+        velocity.z *= -1;
       }
-    }
-
-    setInterval(step, dt * 1000);
+    })();
 
   </script>
 </body>

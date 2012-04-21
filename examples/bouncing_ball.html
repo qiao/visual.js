@@ -47,8 +47,9 @@
     });
     ball.velocity = new THREE.Vector3(0, -1, 0);
 
-    var dt = 0.01;
-    setInterval(function() {
+    var dt = 1.0 / 60;
+    (function step() {
+      requestAnimationFrame(step);
       ball.pos.addSelf(
         ball.velocity.clone().multiplyScalar(dt)
       );
@@ -57,7 +58,7 @@
       } else {
         ball.velocity.y = ball.velocity.y - 9.8 * dt;
       }
-    }, dt * 1000);
+    })();
 
   </script>
 </body>
