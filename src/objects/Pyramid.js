@@ -23,11 +23,11 @@ Object.defineProperties(Visual.Pyramid.prototype, {
       var geometry = new THREE.Geometry();
 
       var vertices = geometry.vertices;
-      vertices.push(new THREE.Vertex(new THREE.Vector3(x, y, 0)));
-      vertices.push(new THREE.Vertex(new THREE.Vector3(x, -y, 0)));
-      vertices.push(new THREE.Vertex(new THREE.Vector3(-x, -y, 0)));
-      vertices.push(new THREE.Vertex(new THREE.Vector3(-x, y, 0)));
-      vertices.push(new THREE.Vertex(new THREE.Vector3(0, 0, z)));
+      vertices.push(new THREE.Vector3(x, y, 0));
+      vertices.push(new THREE.Vector3(x, -y, 0));
+      vertices.push(new THREE.Vector3(-x, -y, 0));
+      vertices.push(new THREE.Vector3(-x, y, 0));
+      vertices.push(new THREE.Vector3(0, 0, z));
 
       var faces = geometry.faces;
       faces.push(new THREE.Face4(0, 1, 2, 3));

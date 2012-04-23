@@ -19,20 +19,17 @@ Object.defineProperties(Visual.Arrow.prototype, {
       var shaftWidth  = this._shaftWidth;
       var shaftLength = this._length - headLength;
 
-      var rotationMatrix = new THREE.Matrix4();
-      var translationMatrix = new THREE.Matrix4();
+      var matrix = new THREE.Matrix4();
 
       var shaft = new THREE.CubeGeometry(shaftWidth, shaftWidth, shaftLength);
-      translationMatrix.setTranslation(0, 0, shaftLength / 2);
-      shaft.applyMatrix(translationMatrix);
+      matrix.translate(new THREE.Vector3(0, 0, shaftLength / 2));
+      shaft.applyMatrix(matrix);
 
       var head = new THREE.CylinderGeometry(0, headWidth, headLength, 4);
-      rotationMatrix.setRotationY(Math.PI / 4);
-      head.applyMatrix(rotationMatrix);
-      rotationMatrix.setRotationX(Math.PI / 2);
-      head.applyMatrix(rotationMatrix);
-      translationMatrix.setTranslation(0, 0, headLength / 2 + shaftLength);
-      head.applyMatrix(translationMatrix);
+      matrix.identity();
+      matrix.setRotationFromEuler(new THREE.Vector3(Math.PI / 2, Math.PI / 4, 0), 'XYZ')
+      matrix.translate(new THREE.Vector3(0, headLength / 2 + shaftLength, 0));
+      head.applyMatrix(matrix);
 
       // fix head's vertex normals
       var faces = head.faces;

@@ -4,7 +4,6 @@ build/Visual.js: $(shell find src lib -name "*.js" -type f)
 	@cat \
 		lib/Three.js \
 		lib/Stats.js \
-		lib/CylinderGeometry.js \
 		src/Visual.js \
 		src/Util.js \
 		src/Controller.js \
