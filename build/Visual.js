@@ -1231,7 +1231,7 @@ Visual.Primitive.prototype = {
     dummy.add(this.mesh);
 
     var rotationMatrix = new THREE.Matrix4();
-    rotationMatrix.setRotationAxis(axis, angle);
+    rotationMatrix.rotateByAxis(axis, angle);
     dummy.applyMatrix(rotationMatrix);
   }
 };
