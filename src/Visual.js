@@ -163,19 +163,19 @@ Visual.prototype = {
   },
 
   _updateBasicCameraPosition: function() {
-    var offset = this.forward.clone().setLength(1.0 / this._scale);
-    this.camera.position = this.center.clone().subSelf(offset);
-    this.camera.lookAt(this.center);
+    var offset = this._forward.clone().setLength(1.0 / this._scale);
+    this.camera.position = this._center.clone().subSelf(offset);
+    this.camera.lookAt(this._center);
   },
 
   _applyUserCameraOffset: function() {
     this.controller.update();
-    this.camera.lookAt(this.center);
+    this.camera.lookAt(this._center);
   },
 
   _computeBoundRadius: function() {
     var objects = this.objects;
-    var center = this.center;
+    var center = this._center;
     var maxRadius = 0;
     for (var i = 0, l = objects.length; i < l; ++i) {
       var object = objects[i];
@@ -205,5 +205,19 @@ Visual.prototype = {
   },
   set scale(v) {
     this.scale = v;
+  },
+
+  get forward() {
+    return this._forward;
+  },
+  set forward(v) {
+    this._forward = Visual.Util.toVector3(v);
+  },
+
+  get center() {
+    return this._center;
+  },
+  set center(v) {
+    this._center = Visual.Util.toVector3(v);
   },
 };
