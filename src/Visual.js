@@ -204,7 +204,7 @@ Visual.prototype = {
     return this._scale;
   },
   set scale(v) {
-    this.scale = v;
+    this._scale = v;
   },
 
   get forward() {
