@@ -12,7 +12,7 @@
       overflow: hidden;
     }
     #info {
-      width: 300px;
+      width: 500px;
       text-align: center;
       margin: 20px auto;
     }
@@ -23,7 +23,7 @@
   </style>
 </head>
 <body>
-  <div id="info"> Press w/a/s/d to rotate, z/x to zoom </div>
+  <div id="info"> Press w/a/s/d to rotate, z/x to zoom, space to reset </div>
 
   <script type="text/javascript">
 
@@ -42,7 +42,7 @@
     // create box2d world
     var world = new b2World(
       new b2Vec2(0, -10), // gravity
-      true               // allow sleep
+      false               // disallow sleep
     );
 
     // create box2d ground
@@ -53,7 +53,7 @@
     ground.fixDef.friction = 0.5;
     ground.fixDef.restitution = 0.2;
     ground.fixDef.shape = new b2PolygonShape();
-    ground.fixDef.shape.SetAsBox(10, 0.05);
+    ground.fixDef.shape.SetAsBox(15, 0.05);
 
     ground.bodyDef = new b2BodyDef();
     ground.bodyDef.type = b2Body.b2_staticBody;
@@ -65,7 +65,7 @@
 
     // create box2d boxes
     var boxes = [];
-    for (var i = 0; i < 10; ++i) {
+    for (var i = 0; i < 20; ++i) {
       var box = boxes[i] = {};
 
       box.fixDef = new b2FixtureDef();
@@ -78,7 +78,7 @@
       box.bodyDef = new b2BodyDef();
       box.bodyDef.type = b2Body.b2_dynamicBody;
       box.bodyDef.position.x = (Math.random() - 0.5) * 20;
-      box.bodyDef.position.y = Math.random() * 10;
+      box.bodyDef.position.y = Math.random() * 20 + 1;
 
       box.body = world.CreateBody(box.bodyDef);
       box.body.CreateFixture(box.fixDef);
@@ -94,7 +94,7 @@
 
     ground.model = scene.box({
       width: 10,
-      length: 20,
+      length: 30,
       height: 0.1
     });
 
@@ -103,6 +103,7 @@
         pos: [box.bodyDef.position.x, box.bodyDef.position.y, 0]
       });
     });
+
 
     // update and render
     (function loop(){
@@ -123,8 +124,24 @@
         var y = Math.sin(angle);
         box.model.axis = [x, y, 0];
       });
-
     })();
+
+    function reset() {
+      boxes.forEach(function(box) {
+        var x = (Math.random() - 0.5) * 20;
+        var y = Math.random() * 20 + 1;
+        box.body.SetPosition(new b2Vec2(x, y));
+        box.body.SetLinearVelocity(new b2Vec2(0, 0));
+        box.model.pos = [x, y, 0];
+        box.model.axis = [1, 0, 0];
+      });
+    };
+
+    window.addEventListener('keydown', function(event) {
+      if ((event.keyCode || event.which) === 32) { //space
+        reset();
+      }
+    });
 
   </script>
 </body>
