@@ -14,7 +14,7 @@ Visual.Cylinder = function(scene, opts) {
 Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
 
 Object.defineProperties(Visual.Cylinder.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
         this._topRadius, this._radius, this._length, this._segments, 4
@@ -27,8 +27,11 @@ Object.defineProperties(Visual.Cylinder.prototype, {
       var translationMatrix = new THREE.Matrix4();
       translationMatrix.translate(new THREE.Vector3(0, 0, this._length / 2));
       geometry.applyMatrix(translationMatrix);
+
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
       
-      return geometry;
+      return mesh;
     },
   },
 

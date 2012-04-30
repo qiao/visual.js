@@ -7,9 +7,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshLambertMaterial();
-  var geometry   = this._buildGeometry();
-  this.mesh      = new THREE.Mesh(geometry, material);
+  this.mesh      = this._buildMesh();
 
   this.pos       = opts.pos  || new THREE.Vector3(0, 0, 0);
   this.axis      = opts.axis || new THREE.Vector3(1, 0, 0);
@@ -31,8 +29,7 @@ Visual.Primitive.prototype = {
   },
 
   _updateMesh: function() {
-    var geometry = this._buildGeometry();
-    var mesh = new THREE.Mesh(geometry, this.mesh.material);
+    var mesh = this._buildMesh();
     mesh.position = this.mesh.position;
     mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);

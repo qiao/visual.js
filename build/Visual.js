@@ -1117,9 +1117,7 @@ Visual.Primitive = function(scene, opts) {
 
   this.scene     = scene;
 
-  var material   = new THREE.MeshLambertMaterial();
-  var geometry   = this._buildGeometry();
-  this.mesh      = new THREE.Mesh(geometry, material);
+  this.mesh      = this._buildMesh();
 
   this.pos       = opts.pos  || new THREE.Vector3(0, 0, 0);
   this.axis      = opts.axis || new THREE.Vector3(1, 0, 0);
@@ -1141,8 +1139,7 @@ Visual.Primitive.prototype = {
   },
 
   _updateMesh: function() {
-    var geometry = this._buildGeometry();
-    var mesh = new THREE.Mesh(geometry, this.mesh.material);
+    var mesh = this._buildMesh();
     mesh.position = this.mesh.position;
     mesh.rotation = this.mesh.rotation;
     this.scene.remove(this);
@@ -1250,10 +1247,12 @@ Visual.Box = function(scene, opts) {
 Visual.Util.inherits(Visual.Box, Visual.Primitive);
 
 Object.defineProperties(Visual.Box.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.CubeGeometry(this._width, this._height, this._length, 1, 1, 1);
-      return geometry;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      return mesh;
     }
   },
   length: {
@@ -1297,10 +1296,12 @@ Visual.Sphere = function(scene, opts) {
 Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
 
 Object.defineProperties(Visual.Sphere.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.SphereGeometry(this._radius, 24, 24);
-      return geometry;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      return mesh;
     }
   },
   radius: {
@@ -1331,7 +1332,7 @@ Visual.Cylinder = function(scene, opts) {
 Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
 
 Object.defineProperties(Visual.Cylinder.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
         this._topRadius, this._radius, this._length, this._segments, 4
@@ -1344,8 +1345,11 @@ Object.defineProperties(Visual.Cylinder.prototype, {
       var translationMatrix = new THREE.Matrix4();
       translationMatrix.translate(new THREE.Vector3(0, 0, this._length / 2));
       geometry.applyMatrix(translationMatrix);
+
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
       
-      return geometry;
+      return mesh;
     },
   },
 
@@ -1395,7 +1399,7 @@ Visual.Pyramid = function(scene, opts) {
 Visual.Util.inherits(Visual.Pyramid, Visual.Primitive);
 
 Object.defineProperties(Visual.Pyramid.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var x = this._width / 2;
       var y = this._height / 2;
@@ -1434,7 +1438,10 @@ Object.defineProperties(Visual.Pyramid.prototype, {
         face.vertexNormals = [n, n, n];
       }
 
-      return geometry;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+
+      return mesh;
     }
   },
   width: {
@@ -1481,7 +1488,7 @@ Visual.Arrow = function(scene, opts) {
 Visual.Util.inherits(Visual.Arrow, Visual.Primitive);
 
 Object.defineProperties(Visual.Arrow.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var headWidth   = this._headWidth;
       var headLength  = this._headLength;
@@ -1512,7 +1519,10 @@ Object.defineProperties(Visual.Arrow.prototype, {
 
       THREE.GeometryUtils.merge(shaft, head);
 
-      return shaft;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(shaft, material);
+
+      return mesh;
     }
   },
 });

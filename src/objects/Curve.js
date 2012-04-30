@@ -9,7 +9,7 @@ Visual.Curve = function(scene, opts) {
 Visual.Util.inherits(Visual.Curve, Visual.Primitive);
 
 Object.defineProperties(Visual.Curve.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.Geometry();
     }

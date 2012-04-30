@@ -11,7 +11,7 @@ Visual.Pyramid = function(scene, opts) {
 Visual.Util.inherits(Visual.Pyramid, Visual.Primitive);
 
 Object.defineProperties(Visual.Pyramid.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var x = this._width / 2;
       var y = this._height / 2;
@@ -50,7 +50,10 @@ Object.defineProperties(Visual.Pyramid.prototype, {
         face.vertexNormals = [n, n, n];
       }
 
-      return geometry;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+
+      return mesh;
     }
   },
   width: {

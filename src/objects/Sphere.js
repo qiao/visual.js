@@ -9,10 +9,12 @@ Visual.Sphere = function(scene, opts) {
 Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
 
 Object.defineProperties(Visual.Sphere.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var geometry = new THREE.SphereGeometry(this._radius, 24, 24);
-      return geometry;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      return mesh;
     }
   },
   radius: {

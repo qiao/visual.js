@@ -12,7 +12,7 @@ Visual.Arrow = function(scene, opts) {
 Visual.Util.inherits(Visual.Arrow, Visual.Primitive);
 
 Object.defineProperties(Visual.Arrow.prototype, {
-  _buildGeometry: {
+  _buildMesh: {
     value: function() {
       var headWidth   = this._headWidth;
       var headLength  = this._headLength;
@@ -43,7 +43,10 @@ Object.defineProperties(Visual.Arrow.prototype, {
 
       THREE.GeometryUtils.merge(shaft, head);
 
-      return shaft;
+      var material = new THREE.MeshLambertMaterial();
+      var mesh = new THREE.Mesh(shaft, material);
+
+      return mesh;
     }
   },
 });
