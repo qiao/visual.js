@@ -62,11 +62,11 @@ function Visual(opts) {
   // create stats
   if (opts.showStats) {
     var stats = this.stats = new Stats();
-    var domElement = stats.domElement;
-    domElement.style.position = 'absolute';
-    domElement.style.top = '0px';
-    domElement.style.left = '0px';
-    this._container.appendChild(domElement);
+    var statsDomElement = stats.domElement;
+    statsDomElement.style.position = 'absolute';
+    statsDomElement.style.top = '0px';
+    statsDomElement.style.left = '0px';
+    this._container.appendChild(statsDomElement);
   }
 
   // enter render loop
