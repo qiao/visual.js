@@ -16,6 +16,7 @@ build/Visual.js: $(shell find src lib -name "*.js" -type f)
 		src/objects/Arrow.js \
 		src/objects/Curve.js \
 		src/objects/Convex.js \
+		src/objects/Ring.js \
 		> build/Visual.js
 
 watch:
