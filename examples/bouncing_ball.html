@@ -8,30 +8,28 @@
     body {
       background: #000;
       color: #eee;
+      margin: 0px;
       overflow: hidden;
     }
     #info {
-      width: 300px;
+      position: absolute;
+      top: 20px;
+      width: 100%;
       text-align: center;
-      margin: 20px auto;
-    }
-    #container {
-      text-align: center;
-      margin: 0 auto;
     }
   </style>
 </head>
 <body>
   <div id="info"> Press w/a/s/d to rotate, z/x to zoom </div>
-  <div id="container"></div>
 
   <script type="text/javascript">
 
     var scene = Visual({
-      container: document.getElementById('container'),
-      width: 480, 
-      height: 480
+      container: document.body,
+      width: window.innerWidth,
+      height: window.innerHeight,
     });
+
     var box = scene.box({
       pos: [0, 0, 0],
       length: 4,
@@ -45,20 +43,23 @@
       radius: 1,
       color: 0xff0000
     });
-    ball.velocity = new THREE.Vector3(0, -1, 0);
+
+    var velocity = new THREE.Vector3(0, -1, 0);
 
     var dt = 1.0 / 60;
-    (function step() {
-      requestAnimationFrame(step);
+
+    function step() {
       ball.pos.addSelf(
-        ball.velocity.clone().multiplyScalar(dt)
+        velocity.clone().multiplyScalar(dt)
       );
       if (ball.y < ball.radius) {
-        ball.velocity.y = Math.abs(ball.velocity.y);
+        velocity.y = Math.abs(velocity.y);
       } else {
-        ball.velocity.y = ball.velocity.y - 9.8 * dt;
+        velocity.y = velocity.y - 9.8 * dt;
       }
-    })();
+    };
+
+    setInterval(step, dt * 1000);
 
   </script>
 </body>

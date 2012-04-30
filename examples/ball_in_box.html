@@ -8,14 +8,13 @@
     body {
       background: #000;
       color: #eee;
+      margin: 0px;
       overflow: hidden;
     }
     #info {
-      width: 300px;
       position: absolute;
-      left: 50%;
-      margin-left: -150px;
-      margin-top: 20px;
+      top: 20px;
+      width: 100%;
       text-align: center;
     }
   </style>
@@ -74,8 +73,7 @@
     var velocity = new THREE.Vector3(Math.random(), Math.random(), Math.random());
     var limit = bounding / 2 - 0.5 - ball.radius;
 
-    (function step() {
-      requestAnimationFrame(step);
+    function step() {
       ball.pos.addSelf(velocity);
       if (Math.abs(ball.pos.x) > limit) {
         velocity.x *= -1;
@@ -86,7 +84,9 @@
       if (Math.abs(ball.pos.z) > limit) {
         velocity.z *= -1;
       }
-    })();
+    }
+
+    setInterval(step, 30)
 
   </script>
 </body>
