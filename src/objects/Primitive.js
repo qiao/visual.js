@@ -1,6 +1,7 @@
 ;(function() {
 
-var toV3 = Visual.Util.toVector3;
+var toV3  = Visual.Util.toVector3;
+var toHex = Visual.Util.toColorHex;
 
 Visual.Primitive = function(scene, opts) {
   opts = opts || {};
@@ -81,7 +82,7 @@ Visual.Primitive.prototype = {
     return this.mesh.material.color.getHex();
   },
   set color(v) {
-    this.mesh.material.color.setHex(v);
+    this.mesh.material.color.setHex(toHex(v));
   },
   
   get wireframe() {
