@@ -974,7 +974,7 @@ Visual.Util = {
     });
   },
   /**
-   * Convert a object to a instance of THREE.Vector3
+   * Convert an object to an instance of THREE.Vector3
    * @param {object} vec3 Possible: new THREE.Vector3(1,0,0), [1,0,0], {0:1,1:0,2:0}
    * @return {THREE.Vector3} e.g. new THREE.Vector3(1,0,0)
    */
@@ -986,7 +986,7 @@ Visual.Util = {
     return new THREE.Vector3(vec3[0], vec3[1], vec3[2]);
   },
   /**
-   * Convert colors into hex form.
+   * Convert a color to the hex form.
    * @param {object} color Possible: 'red', '#f00', '#ff0000', 0xff0000
    * @return {number} e.g. 0xff0000
    */
@@ -1209,45 +1209,54 @@ Visual.Controller.prototype = {
     var camera = this.scene.camera;
     var center = this.scene.center;
 
-    // apply rotation
-    var x = this._overallRotationOffset.x;
-    var y = this._overallRotationOffset.y;
-
-    // The rotation is calculated in the spherical coordinate system
-    // theta: the angle formed by the vector and z-axis in the xz-plane
-    // phi:   the angle formed by the vector and y-axis in the xy-plane
-
-    var theta = 2 * Math.PI * x / 1800;
-    var phi   = 2 * Math.PI * y / 1800;
-
     var pos       = camera.position.clone().subSelf(center);
     var newPos    = pos.clone();
-    var radius    = pos.length();
 
-    var origTheta = Math.atan2(pos.x, pos.z);
-    var newTheta  = origTheta - theta;
-    newPos.z = radius * Math.cos(newTheta);
-    newPos.x = radius * Math.sin(newTheta);
-    
-    var origPhi = Math.atan2(Math.sqrt(pos.x * pos.x + pos.z * pos.z), pos.y);
-    var newPhi = origPhi - phi;
+    if (!this.noRotate) {
 
-    // restrict phi to be in [eps, Math.PI - eps]
-    var eps = 0.01;
-    if (newPhi < eps) {
-      newPhi = eps;
-      this._overallRotationOffset.y = 1800 * origPhi / Math.PI / 2;
-    } else if (newPhi > Math.PI - eps) {
-      newPhi = Math.PI - eps;
-      this._overallRotationOffset.y = -1800 * (Math.PI - origPhi) / Math.PI / 2;
+      // apply rotation
+      var x = this._overallRotationOffset.x;
+      var y = this._overallRotationOffset.y;
+
+      // The rotation is calculated in the spherical coordinate system
+      // theta: the angle formed by the vector and z-axis in the xz-plane
+      // phi:   the angle formed by the vector and y-axis in the xy-plane
+
+      var theta = 2 * Math.PI * x / 1800;
+      var phi   = 2 * Math.PI * y / 1800;
+
+      var pos       = camera.position.clone().subSelf(center);
+      var newPos    = pos.clone();
+      var radius    = pos.length();
+
+      var origTheta = Math.atan2(pos.x, pos.z);
+      var newTheta  = origTheta - theta;
+      newPos.z = radius * Math.cos(newTheta);
+      newPos.x = radius * Math.sin(newTheta);
+      
+      var origPhi = Math.atan2(Math.sqrt(pos.x * pos.x + pos.z * pos.z), pos.y);
+      var newPhi = origPhi - phi;
+
+      // restrict phi to be in [eps, Math.PI - eps]
+      var eps = 0.01;
+      if (newPhi < eps) {
+        newPhi = eps;
+        this._overallRotationOffset.y = 1800 * origPhi / Math.PI / 2;
+      } else if (newPhi > Math.PI - eps) {
+        newPhi = Math.PI - eps;
+        this._overallRotationOffset.y = -1800 * (Math.PI - origPhi) / Math.PI / 2;
+      }
+
+      newPos.x = radius * Math.sin(newPhi) * Math.sin(newTheta);
+      newPos.y = radius * Math.cos(newPhi);
+      newPos.z = radius * Math.sin(newPhi) * Math.cos(newTheta);
+
+    } // end update rotation
+
+
+    if (!this.noZoom) {
+      newPos.multiplyScalar(1.0 / this._scale);
     }
-
-    newPos.x = radius * Math.sin(newPhi) * Math.sin(newTheta);
-    newPos.y = radius * Math.cos(newPhi);
-    newPos.z = radius * Math.sin(newPhi) * Math.cos(newTheta);
-
-    // apply scale
-    newPos.multiplyScalar(1.0 / this._scale);
 
     // update camera position
     camera.position.copy(center.clone().addSelf(newPos));
@@ -1255,15 +1264,24 @@ Visual.Controller.prototype = {
 
 
   _mousedown: function(event) {
-  
+    this._state = this._STATE.ROTATE;
+    this._rotateStart.set(event.clientX, event.clientY);
+    this._rotateEnd.copy(this._rotateStart);
   },
 
   _mousemove: function(event) {
-  
+    if (this._state !== this._STATE.ROTATE) {
+      return;
+    }
+    this._rotateEnd.set(event.clientX, event.clientY);
+    var delta = this._rotateEnd.clone().subSelf(this._rotateStart);
+    this._rotateStart.copy(this._rotateEnd);
+    this._overallRotationOffset.x += delta.x;
+    this._overallRotationOffset.y += delta.y;
   },
 
   _mouseup: function(event) {
-  
+    this._state = this._STATE.NONE;
   },
 
   _keydown: function(event) {
