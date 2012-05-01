@@ -11,7 +11,7 @@ Visual.Util = {
     });
   },
   /**
-   * Convert a object to a instance of THREE.Vector3
+   * Convert an object to an instance of THREE.Vector3
    * @param {object} vec3 Possible: new THREE.Vector3(1,0,0), [1,0,0], {0:1,1:0,2:0}
    * @return {THREE.Vector3} e.g. new THREE.Vector3(1,0,0)
    */
@@ -23,7 +23,7 @@ Visual.Util = {
     return new THREE.Vector3(vec3[0], vec3[1], vec3[2]);
   },
   /**
-   * Convert colors into hex form.
+   * Convert a color to the hex form.
    * @param {object} color Possible: 'red', '#f00', '#ff0000', 0xff0000
    * @return {number} e.g. 0xff0000
    */
