@@ -1166,6 +1166,12 @@ Visual.Util = {
     "yellowgreen"          : "#9acd32"
   },
 };
+/**
+ * The controller handles mouse and keyboard interaction, and updates
+ * the position of the camera.
+ * @constructor
+ * @param {Visual.Scene} scene An instance of Visual.Scene
+ */
 Visual.Controller = function(scene) {
   this.scene = scene;
 
