@@ -5,7 +5,8 @@ function Visual(opts) {
 
   opts = opts || {};
 
-  var toV3 = Visual.Util.toVector3;
+  var toV3  = Visual.Util.toVector3;
+  var toHex = Visual.Util.toColorHex;
 
   // setup scene parameters
   this._container  = opts.container  || document.body;
@@ -14,8 +15,8 @@ function Visual(opts) {
   this._scale      = opts.scale      || 0.1;
   this._fov        = opts.fov        || 60;
 
-  this.foreground  = opts.foreground || 0xffffff;
-  this.background  = opts.background || 0x000000;
+  this.foreground  = opts.foreground !== undefined ? toHex(opts.foreground) : 0xffffff;
+  this.background  = opts.background !== undefined ? toHex(opts.background) : 0x000000;
 
   this.center      = opts.center     ? toV3(opts.center)  : new THREE.Vector3(0, 0, 0);
   this.forward     = opts.forward    ? toV3(opts.forward) : new THREE.Vector3(0, 0, -1);
@@ -41,7 +42,7 @@ function Visual(opts) {
 
   // create renderer
   var renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setClearColor(this.background, 1);
+  renderer.setClearColorHex(this.background, 1);
   renderer.setSize(this._width, this._height);
   var domElement = this.domElement = renderer.domElement;
   this._container.appendChild(domElement);
