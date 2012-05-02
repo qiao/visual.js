@@ -11,6 +11,10 @@
       margin: 0px;
       overflow: hidden;
     }
+    #container {
+      margin: 0 auto;
+      text-align: center;
+    }
     #info {
       position: absolute;
       top: 20px;
@@ -21,41 +25,40 @@
 </head>
 <body>
   <div id="info"> Press w/a/s/d to rotate, z/x to zoom </div>
+  <div id="container"></div>
 
   <script type="text/javascript">
 
     var scene = Visual({
-      container: document.body,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      container: document.getElementById('container'),
+      width: 640,
+      height: 480,
+      forward: [0, -0.2, -1]
     });
 
-    var box = scene.box({
+    var floor = scene.box({
       pos: [0, 0, 0],
       length: 4,
       height: 0.5,
       width: 4,
-      color: 0xdddddd
+      color: 'white'
     });
 
     var ball = scene.sphere({
       pos: [0, 4, 0],
       radius: 1,
-      color: 0xff0000
+      color: 'red'
     });
 
-    var velocity = new THREE.Vector3(0, -1, 0);
-
+    var velocity = -1;
     var dt = 1.0 / 60;
 
     function step() {
-      ball.pos.addSelf(
-        velocity.clone().multiplyScalar(dt)
-      );
+      ball.y += velocity * dt;
       if (ball.y < ball.radius) {
-        velocity.y = Math.abs(velocity.y);
+        velocity = -velocity;
       } else {
-        velocity.y = velocity.y - 9.8 * dt;
+        velocity = velocity - 9.8 * dt;
       }
     };
 
