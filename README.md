@@ -16,7 +16,7 @@ NOTE: still under heavy development
 A quick example
 ---------------
 
-See how simple it is to create a bouncing ball. ([online demo]())
+See how simple it is to create a bouncing ball. ([online demo](http://qiao.github.com/visual.js/examples/bouncing_ball.html))
 
 First of all, to create a scene, we simply indicate its container and size.
 
@@ -74,6 +74,6 @@ See, it's just that simple.
 More examples
 -------------
 
-[![](http://i.imgur.com/Z5vmfs.png)](https://qiao.github.com/visual.js/examples/ball_in_box.html)
-[![](http://i.imgur.com/oSET2s.png)](https://qiao.github.com/visual.js/examples/dropping_boxes.html)
-[![](http://i.imgur.com/fJhzWs.png)](https://qiao.github.com/visual.js/examples/objects.html)
+[![](http://i.imgur.com/Z5vmfs.png)](http://qiao.github.com/visual.js/examples/ball_in_box.html)
+[![](http://i.imgur.com/oSET2s.png)](http://qiao.github.com/visual.js/examples/dropping_boxes.html)
+[![](http://i.imgur.com/fJhzWs.png)](http://qiao.github.com/visual.js/examples/objects.html)
