@@ -13,10 +13,15 @@ Therefore, it's great to be used for quick prototyping, scientific or educationa
 
 NOTE: still under heavy development
 
+Download
+--------
+
+Visual.js bundled with Three.js: https://raw.github.com/qiao/visual.js/master/build/Visual.js
+
 A quick example
 ---------------
 
-See how simple it is to create a bouncing ball. ([online demo](http://qiao.github.com/visual.js/examples/bouncing_ball.html))
+See how simple it is to create a bouncing ball. ([online demo](http://jsfiddle.net/qiao/fS6m3/1/))
 
 First of all, to create a scene, we simply indicate its container and size.
 
@@ -74,9 +79,9 @@ See, it's just that simple.
 More examples
 -------------
 
-[![](http://i.imgur.com/Z5vmfs.png)](http://qiao.github.com/visual.js/examples/ball_in_box.html)
-[![](http://i.imgur.com/oSET2s.png)](http://qiao.github.com/visual.js/examples/dropping_boxes.html)
-[![](http://i.imgur.com/fJhzWs.png)](http://qiao.github.com/visual.js/examples/objects.html)
+[![](http://i.imgur.com/Z5vmfs.png)](http://jsfiddle.net/qiao/rqf3q/)
+[![](http://i.imgur.com/oSET2s.png)](http://jsfiddle.net/qiao/kU6HX/)
+[![](http://i.imgur.com/fJhzWs.png)](http://jsfiddle.net/qiao/uuZ93/)
 
 
 License
