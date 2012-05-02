@@ -36,6 +36,7 @@ Visual.Controller = function(scene) {
   domElement.addEventListener('mousedown', function(event) { self._mousedown(event); }, false);
   domElement.addEventListener('mousemove', function(event) { self._mousemove(event); }, false);
   domElement.addEventListener('mouseup', function(event) { self._mouseup(event); }, false);
+  domElement.addEventListener('mousewheel', function(event) { self._mousewheel(event); }, false);
   window.addEventListener('keydown', function(event) { self._keydown(event); }, false);
   window.addEventListener('keyup', function(event) { self._keyup(event); }, false);
 };
@@ -63,9 +64,7 @@ Visual.Controller.prototype = {
       var theta = 2 * Math.PI * x / 1800;
       var phi   = 2 * Math.PI * y / 1800;
 
-      var pos       = camera.position.clone().subSelf(center);
-      var newPos    = pos.clone();
-      var radius    = pos.length();
+      var radius = pos.length();
 
       var origTheta = Math.atan2(pos.x, pos.z);
       var newTheta  = origTheta - theta;
@@ -122,10 +121,17 @@ Visual.Controller.prototype = {
     this._state = this._STATE.NONE;
   },
 
+  _mousewheel: function(event) {
+    if (event.wheelDelta > 0) {
+      this._zoomIn();
+    } else {
+      this._zoomOut();
+    }
+  },
+
   _keydown: function(event) {
     var keyCode = event.keyCode || event.which;
     var rotateDelta = this.rotateSpeed * 20;
-    var zoomDelta = this.zoomSpeed * 0.95;
     switch (keyCode) {
     case 87: // w
       this._overallRotationOffset.y += rotateDelta;
@@ -140,12 +146,20 @@ Visual.Controller.prototype = {
       this._overallRotationOffset.x -= rotateDelta;
       break;
     case 88: // x
-      this._scale /= zoomDelta;
+      this._zoomOut();
       break;
     case 90: // z
-      this._scale *= zoomDelta;
+      this._zoomIn();
       break;
     }
+  },
+
+  _zoomIn: function() {
+    this._scale /= (this.zoomSpeed * 0.95);
+  },
+
+  _zoomOut: function() {
+    this._scale *= (this.zoomSpeed * 0.95);
   },
 
   _keyup: function(event) {
