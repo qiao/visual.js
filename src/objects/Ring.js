@@ -7,9 +7,10 @@ Visual.Ring = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Ring, Visual.Primitive);
-
-Object.defineProperties(Visual.Ring.prototype, {
+Visual.Ring.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Ring
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.TorusGeometry(this._radius, this._thickness, 8, 32);

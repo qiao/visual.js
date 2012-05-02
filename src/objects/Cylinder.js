@@ -11,9 +11,10 @@ Visual.Cylinder = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
-
-Object.defineProperties(Visual.Cylinder.prototype, {
+Visual.Cylinder.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Cylinder
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(

@@ -962,18 +962,10 @@ Visual.prototype = {
     this._center = Visual.Util.toVector3(v);
   },
 };
+/**
+ * @namespace Visual.Util
+ */
 Visual.Util = {
-  inherits: function(ctor, superCtor) {
-    ctor.super_ = superCtor;
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  },
   /**
    * Convert an object to an instance of THREE.Vector3
    * @param {object} vec3 Possible: new THREE.Vector3(1,0,0), [1,0,0], {0:1,1:0,2:0}
@@ -1474,9 +1466,10 @@ Visual.Box = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Box, Visual.Primitive);
-
-Object.defineProperties(Visual.Box.prototype, {
+Visual.Box.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Box
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.CubeGeometry(this._width, this._height, this._length, 1, 1, 1);
@@ -1523,9 +1516,10 @@ Visual.Sphere = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
-
-Object.defineProperties(Visual.Sphere.prototype, {
+Visual.Sphere.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Sphere
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.SphereGeometry(this._radius, 24, 24);
@@ -1559,9 +1553,10 @@ Visual.Cylinder = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Cylinder, Visual.Primitive);
-
-Object.defineProperties(Visual.Cylinder.prototype, {
+Visual.Cylinder.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Cylinder
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.CylinderGeometry(
@@ -1613,7 +1608,11 @@ Visual.Cone = function(scene, opts) {
   Visual.Cylinder.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Cone, Visual.Cylinder);
+Visual.Cone.prototype = Object.create(Visual.Cylinder.prototype, {
+  constructor: {
+    value: Visual.Cone
+  }
+})
 
 Visual.registerObject('cone', Visual.Cone);
 Visual.Pyramid = function(scene, opts) {
@@ -1626,9 +1625,10 @@ Visual.Pyramid = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Pyramid, Visual.Primitive);
-
-Object.defineProperties(Visual.Pyramid.prototype, {
+Visual.Pyramid.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Pyramid
+  },
   _buildMesh: {
     value: function() {
       var x = this._width / 2;
@@ -1715,9 +1715,10 @@ Visual.Arrow = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Arrow, Visual.Primitive);
-
-Object.defineProperties(Visual.Arrow.prototype, {
+Visual.Arrow.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Arrow
+  },
   _buildMesh: {
     value: function() {
       var headWidth   = this._headWidth;
@@ -1772,9 +1773,10 @@ Visual.Curve = function(scene, opts) {
   this.linewidth = opts.linewidth || 1;
 };
 
-Visual.Util.inherits(Visual.Curve, Visual.Primitive);
-
-Object.defineProperties(Visual.Curve.prototype, {
+Visual.Curve.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Curve
+  },
   update: {
     value: function() {
       // the curve does not need to update its orientation.
@@ -1824,9 +1826,10 @@ Visual.Convex = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Convex, Visual.Primitive);
-
-Object.defineProperties(Visual.Convex.prototype, {
+Visual.Convex.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Convex
+  },
   _buildMesh: {
     value: function() {
       var points = this._points;
@@ -1853,9 +1856,10 @@ Visual.Ring = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Ring, Visual.Primitive);
-
-Object.defineProperties(Visual.Ring.prototype, {
+Visual.Ring.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Ring
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.TorusGeometry(this._radius, this._thickness, 8, 32);

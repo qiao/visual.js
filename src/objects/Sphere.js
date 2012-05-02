@@ -6,9 +6,10 @@ Visual.Sphere = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Sphere, Visual.Primitive);
-
-Object.defineProperties(Visual.Sphere.prototype, {
+Visual.Sphere.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Sphere
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.SphereGeometry(this._radius, 24, 24);

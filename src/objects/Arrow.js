@@ -9,9 +9,10 @@ Visual.Arrow = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Arrow, Visual.Primitive);
-
-Object.defineProperties(Visual.Arrow.prototype, {
+Visual.Arrow.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Arrow
+  },
   _buildMesh: {
     value: function() {
       var headWidth   = this._headWidth;

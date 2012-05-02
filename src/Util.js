@@ -1,15 +1,7 @@
+/**
+ * @namespace Visual.Util
+ */
 Visual.Util = {
-  inherits: function(ctor, superCtor) {
-    ctor.super_ = superCtor;
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  },
   /**
    * Convert an object to an instance of THREE.Vector3
    * @param {object} vec3 Possible: new THREE.Vector3(1,0,0), [1,0,0], {0:1,1:0,2:0}

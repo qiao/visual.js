@@ -12,9 +12,10 @@ Visual.Curve = function(scene, opts) {
   this.linewidth = opts.linewidth || 1;
 };
 
-Visual.Util.inherits(Visual.Curve, Visual.Primitive);
-
-Object.defineProperties(Visual.Curve.prototype, {
+Visual.Curve.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Curve
+  },
   update: {
     value: function() {
       // the curve does not need to update its orientation.

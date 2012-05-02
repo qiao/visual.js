@@ -10,9 +10,10 @@ Visual.Convex = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Convex, Visual.Primitive);
-
-Object.defineProperties(Visual.Convex.prototype, {
+Visual.Convex.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Convex
+  },
   _buildMesh: {
     value: function() {
       var points = this._points;

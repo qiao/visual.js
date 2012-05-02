@@ -6,6 +6,10 @@ Visual.Cone = function(scene, opts) {
   Visual.Cylinder.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Cone, Visual.Cylinder);
+Visual.Cone.prototype = Object.create(Visual.Cylinder.prototype, {
+  constructor: {
+    value: Visual.Cone
+  }
+})
 
 Visual.registerObject('cone', Visual.Cone);

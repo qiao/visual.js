@@ -8,9 +8,10 @@ Visual.Box = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Box, Visual.Primitive);
-
-Object.defineProperties(Visual.Box.prototype, {
+Visual.Box.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Box
+  },
   _buildMesh: {
     value: function() {
       var geometry = new THREE.CubeGeometry(this._width, this._height, this._length, 1, 1, 1);

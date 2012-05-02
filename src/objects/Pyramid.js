@@ -8,9 +8,10 @@ Visual.Pyramid = function(scene, opts) {
   Visual.Primitive.call(this, scene, opts);
 };
 
-Visual.Util.inherits(Visual.Pyramid, Visual.Primitive);
-
-Object.defineProperties(Visual.Pyramid.prototype, {
+Visual.Pyramid.prototype = Object.create(Visual.Primitive.prototype, {
+  constructor: {
+    value: Visual.Pyramid
+  },
   _buildMesh: {
     value: function() {
       var x = this._width / 2;
