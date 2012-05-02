@@ -127,6 +127,8 @@ Visual.Controller.prototype = {
     } else {
       this._zoomOut();
     }
+    event.preventDefault();
+    event.stopPropagation();
   },
 
   _keydown: function(event) {
