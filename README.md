@@ -1,6 +1,7 @@
 Visual.js
 =========
 
+
 Visual.js is an extremely easy to use JavaScript 3D library.
 It's based on [Three.js](https://github.com/mrdoob/three.js), 
 but hides all the fancy stuff, and provides a simple API
@@ -10,9 +11,10 @@ for you.
 With Visual.js, you can rapidly build up a scene without mastering much high level 3D knowledge. 
 Therefore, it's great to be used for quick prototyping, scientific or educational purpose.
 
+NOTE: still under heavy development
+
 A quick example
 ---------------
-
 
 See how simple it is to create a bouncing ball. ([online demo]())
 
@@ -67,3 +69,11 @@ setInterval(step, dt * 1000);
 ```
 
 See, it's just that simple.
+
+
+More examples
+-------------
+
+[![](http://i.imgur.com/Z5vmfs.png)](https://qiao.github.com/visual.js/examples/ball_in_box.html)
+[![](http://i.imgur.com/oSET2s.png)](https://qiao.github.com/visual.js/examples/dropping_boxes.html)
+[![](http://i.imgur.com/fJhzWs.png)](https://qiao.github.com/visual.js/examples/objects.html)
