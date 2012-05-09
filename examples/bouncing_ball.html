@@ -56,9 +56,9 @@
     function step() {
       ball.y += velocity * dt;
       if (ball.y < ball.radius) {
-        velocity = -velocity;
+        velocity *= -1;
       } else {
-        velocity = velocity - 9.8 * dt;
+        velocity -= 9.8 * dt;
       }
     };
 
