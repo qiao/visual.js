@@ -21,7 +21,8 @@ Visual.js bundled with Three.js: https://raw.github.com/qiao/visual.js/master/bu
 A quick example
 ---------------
 
-See how simple it is to create a bouncing ball. ([online demo](http://jsfiddle.net/qiao/fS6m3/1/))
+See how simple it is to create a bouncing ball. 
+
 
 First of all, to create a scene, we simply indicate its container and size.
 
@@ -63,17 +64,21 @@ var dt = 1.0 / 60;
 
 function step() {
     ball.y += velocity * dt;
-    if (ball.y < ball.radius) {
-        velocity = -velocity;
+    if (ball.y < ball.radius + floor.height / 2) {
+        velocity *= -1;
     } else {
-        velocity = velocity - 9.8 * dt;
+        velocity -= 9.8 * dt;
     }
 }
 
 setInterval(step, dt * 1000);
 ```
 
-See, it's just that simple.
+See, it's just that simple. 
+
+Online demo:
+
+[![bouncing ball](http://i.imgur.com/AJWrds.png)](http://jsfiddle.net/qiao/fS6m3/2/)
 
 
 More examples
