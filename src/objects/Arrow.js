@@ -32,19 +32,9 @@ Visual.Arrow.prototype = Object.create(Visual.Primitive.prototype, {
       matrix.translate(new THREE.Vector3(0, headLength / 2 + shaftLength, 0));
       head.applyMatrix(matrix);
 
-      // fix head's vertex normals
-      var faces = head.faces;
-      for (var i = 0, l = faces.length; i < l; ++i) {
-        var face = faces[i];
-        var n = face.normal;
-        if (face instanceof THREE.Face4) {
-          face.vertexNormals = [n, n, n, n];
-        }
-      }
-
       THREE.GeometryUtils.merge(shaft, head);
 
-      var material = new THREE.MeshLambertMaterial();
+      var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });
       var mesh = new THREE.Mesh(shaft, material);
 
       return mesh;
