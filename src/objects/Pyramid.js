@@ -39,19 +39,9 @@ Visual.Pyramid.prototype = Object.create(Visual.Primitive.prototype, {
 
       geometry.computeCentroids();
       geometry.computeFaceNormals();
+      geometry.computeVertexNormals();
 
-      // bottom's vertex normals
-      var n = new THREE.Vector3(0, 0, -1);
-      faces[0].vertexNormals = [n, n, n, n];
-
-      // sides' vertex normals
-      for (var i = 0; i < 4; ++i) {
-        var face = faces[i];
-        n = face.normal;
-        face.vertexNormals = [n, n, n];
-      }
-
-      var material = new THREE.MeshLambertMaterial();
+      var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });
       var mesh = new THREE.Mesh(geometry, material);
 
       return mesh;

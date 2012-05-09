@@ -21,7 +21,7 @@ Visual.Convex.prototype = Object.create(Visual.Primitive.prototype, {
         points[i] = toV3(points[i]);
       }
       var geometry = new THREE.ConvexGeometry(points);
-      var material = new THREE.MeshLambertMaterial();
+      var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });
       var mesh = new THREE.Mesh(geometry, material);
       return mesh;
     }
