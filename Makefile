@@ -1,9 +1,10 @@
 all: build/Visual.js
 
-build/Visual.js: $(shell find src lib -name "*.js" -type f)
+build/Visual.js: $(shell find lib ext src -name "*.js" -type f)
 	@cat \
 		lib/Three.js \
 		lib/Stats.js \
+		ext/PyramidGeometry.js \
 		src/Visual.js \
 		src/Util.js \
 		src/Controller.js \

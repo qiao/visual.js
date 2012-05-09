@@ -738,6 +738,57 @@ var Stats=function(){var h,a,n=0,o=0,i=Date.now(),u=i,p=i,l=0,q=1E3,r=0,e,j,f,b=
 a.style.width="1px",a.style.height=Math.random()*30+"px",a.style.cssFloat="left",a.style.backgroundColor="rgb("+c[0][0]+","+c[0][1]+","+c[0][2]+")",g.appendChild(a);return{domElement:h,update:function(){i=Date.now();m=i-u;s=Math.min(s,m);t=Math.max(t,m);k.textContent=m+" MS ("+s+"-"+t+")";var a=Math.min(30,30-m/200*30);g.appendChild(g.firstChild).style.height=a+"px";u=i;o++;if(i>p+1E3)l=Math.round(o*1E3/(i-p)),q=Math.min(q,l),r=Math.max(r,l),j.textContent=l+" FPS ("+q+"-"+r+")",a=Math.min(30,30-l/
 100*30),f.appendChild(f.firstChild).style.height=a+"px",p=i,o=0}}};
 
+THREE.PyramidGeometry = function(width, length, height) {
+  THREE.Geometry.call(this);
+
+  var x = width / 2;
+  var z = length / 2;
+  var y = height;
+
+  var vertices = this.vertices;
+  vertices.push(new THREE.Vector3(x, 0, z));
+  vertices.push(new THREE.Vector3(-x, 0, z));
+  vertices.push(new THREE.Vector3(-x, 0, -z));
+  vertices.push(new THREE.Vector3(x, 0, -z));
+  vertices.push(new THREE.Vector3(0, y, 0));
+
+  var faces = this.faces;
+  faces.push(new THREE.Face4(0, 1, 2, 3));
+  faces.push(new THREE.Face3(0, 4, 1)) ;
+  faces.push(new THREE.Face3(1, 4, 2));
+  faces.push(new THREE.Face3(2, 4, 3));
+  faces.push(new THREE.Face3(3, 4, 0));
+
+  function vertexUv(vertex) {
+    var mag = vertex.length();
+    return new THREE.UV(vertex.x / mag, vertex.y / mag);
+  }
+
+  for (var i = 0; i < faces.length; ++i) {
+    var face = faces[i];
+    if (face instanceof THREE.Face4) {
+      this.faceVertexUvs[0].push([
+        vertexUv(vertices[face.a]),
+        vertexUv(vertices[face.b]),
+        vertexUv(vertices[face.c]),
+        vertexUv(vertices[face.d])
+      ]);
+    } else { // THREE.Face3
+      this.faceVertexUvs[0].push([
+        vertexUv(vertices[face.a]),
+        vertexUv(vertices[face.b]),
+        vertexUv(vertices[face.c])
+      ]);
+    }
+  }
+
+  this.computeCentroids();
+  this.computeFaceNormals();
+  this.computeVertexNormals();
+};
+
+THREE.PyramidGeometry.prototype = new THREE.Geometry();
+THREE.PyramidGeometry.prototype.constructor = THREE.PyramidGeometry;
 function Visual(opts) {
   if (!(this instanceof Visual)) {
     return new Visual(opts);
@@ -1631,36 +1682,12 @@ Visual.Pyramid.prototype = Object.create(Visual.Primitive.prototype, {
   },
   _buildMesh: {
     value: function() {
-      var x = this._width / 2;
-      var y = this._height / 2;
-      var z = this._length;
-
-      // build pyramid geometry
-      // TODO: faceVertexUvs
-
-      var geometry = new THREE.Geometry();
-
-      var vertices = geometry.vertices;
-      vertices.push(new THREE.Vector3(x, y, 0));
-      vertices.push(new THREE.Vector3(x, -y, 0));
-      vertices.push(new THREE.Vector3(-x, -y, 0));
-      vertices.push(new THREE.Vector3(-x, y, 0));
-      vertices.push(new THREE.Vector3(0, 0, z));
-
-      var faces = geometry.faces;
-      faces.push(new THREE.Face4(0, 1, 2, 3));
-      faces.push(new THREE.Face3(0, 4, 1)) ;
-      faces.push(new THREE.Face3(1, 4, 2));
-      faces.push(new THREE.Face3(2, 4, 3));
-      faces.push(new THREE.Face3(3, 4, 0));
-
-      geometry.computeCentroids();
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-
+      var geometry = new THREE.PyramidGeometry(this._width, this._length, this._height);
+      var rotationMatrix = new THREE.Matrix4();
+      rotationMatrix.rotateX(Math.PI / 2);
+      geometry.applyMatrix(rotationMatrix);
       var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });
       var mesh = new THREE.Mesh(geometry, material);
-
       return mesh;
     }
   },

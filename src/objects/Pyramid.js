@@ -14,36 +14,12 @@ Visual.Pyramid.prototype = Object.create(Visual.Primitive.prototype, {
   },
   _buildMesh: {
     value: function() {
-      var x = this._width / 2;
-      var y = this._height / 2;
-      var z = this._length;
-
-      // build pyramid geometry
-      // TODO: faceVertexUvs
-
-      var geometry = new THREE.Geometry();
-
-      var vertices = geometry.vertices;
-      vertices.push(new THREE.Vector3(x, y, 0));
-      vertices.push(new THREE.Vector3(x, -y, 0));
-      vertices.push(new THREE.Vector3(-x, -y, 0));
-      vertices.push(new THREE.Vector3(-x, y, 0));
-      vertices.push(new THREE.Vector3(0, 0, z));
-
-      var faces = geometry.faces;
-      faces.push(new THREE.Face4(0, 1, 2, 3));
-      faces.push(new THREE.Face3(0, 4, 1)) ;
-      faces.push(new THREE.Face3(1, 4, 2));
-      faces.push(new THREE.Face3(2, 4, 3));
-      faces.push(new THREE.Face3(3, 4, 0));
-
-      geometry.computeCentroids();
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-
+      var geometry = new THREE.PyramidGeometry(this._width, this._length, this._height);
+      var rotationMatrix = new THREE.Matrix4();
+      rotationMatrix.rotateX(Math.PI / 2);
+      geometry.applyMatrix(rotationMatrix);
       var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });
       var mesh = new THREE.Mesh(geometry, material);
-
       return mesh;
     }
   },
