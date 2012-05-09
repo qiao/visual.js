@@ -84,9 +84,9 @@ Online demo:
 More examples
 -------------
 
-[![](http://i.imgur.com/Z5vmfs.png)](http://jsfiddle.net/qiao/rqf3q/)
-[![](http://i.imgur.com/oSET2s.png)](http://jsfiddle.net/qiao/kU6HX/)
-[![](http://i.imgur.com/fJhzWs.png)](http://jsfiddle.net/qiao/uuZ93/)
+[![ball in box](http://i.imgur.com/Z5vmfs.png)](http://jsfiddle.net/qiao/rqf3q/)
+[![dropping boxes](http://i.imgur.com/oSET2s.png)](http://jsfiddle.net/qiao/kU6HX/)
+[![objects](http://i.imgur.com/fJhzWs.png)](http://jsfiddle.net/qiao/uuZ93/)
 
 
 License
