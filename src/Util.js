@@ -27,7 +27,7 @@ Visual.Util = {
     }
     // check if color is like 'red'
     color = color.toLowerCase();
-    if (Visual.Util.colorNames[color]) {
+    if (Visual.Util.colorNames.hasOwnProperty(color)) {
       color = Visual.Util.colorNames[color]; // to string hex
     }
     // check if color is like '#ff0000' or '#f00'
