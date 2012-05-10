@@ -36,17 +36,11 @@ Visual.Util = {
     }
     // strip leading '#'
     color = color.slice(1);
-    switch (color.length) {
-      case 3:
-        color = color[0] + color[0] + color[1] + color[1] + color[2] + color[2];
-        // cascade to case 6
-      case 6:
-        color = '0x' + color;
-        break;
-      default:
-        throw new Error('Invalid color: ' + color);
+    // convert colors like 'f00' to 'ff0000'
+    if (color.length === 3) {
+      color = color[0] + color[0] + color[1] + color[1] + color[2] + color[2];
     }
-    color = parseInt(color);
+    color = parseInt(color, 16);
     if (isNaN(color)) {
       throw new Error('Invalid color: ' + color);
     }
