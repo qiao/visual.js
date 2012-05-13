@@ -78,7 +78,7 @@ See, it's just that simple.
 
 Online demo:
 
-[![bouncing ball](http://i.imgur.com/AJWrds.png)](http://jsfiddle.net/qiao/fS6m3/2/)
+[![bouncing ball](http://i.imgur.com/AJWrds.png)](http://jsfiddle.net/qiao/fS6m3/)
 
 
 More examples
