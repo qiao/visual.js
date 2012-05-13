@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="text/javascript" src="../build/Visual.js"></script>
+  <style type="text/css">
+    body {
+      background: #000;
+      color: #eee;
+      margin: 0px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <script type="text/javascript">
+    
+    var scene = Visual({
+      container: document.body,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      showStats: true
+    });
+
+    for (var i = 0; i < 11; ++i) {
+      for (var j = 0; j < 11; ++j) {
+        scene.sphere({
+          pos: [-10 + i * 2, 0, -10 + j * 2]
+        });
+      }
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual.js - Ball in Box</title>
+  <script type="text/javascript" src="../build/Visual.js"></script>
+  <style type="text/css">
+    body {
+      background: #000;
+      color: #eee;
+      margin: 0px;
+      overflow: hidden;
+    }
+    #info {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="info"> Press w/a/s/d to rotate, z/x to zoom </div>
+  <div id="container"></div>
+
+  <script type="text/javascript">
+
+    var scene = Visual({
+      container: document.body,
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+
+    var ball = scene.sphere({
+      pos: [0, 0, 0],
+      color: 'red',
+      radius: 1,
+    });
+
+    var bounding = 50;
+
+    var right = scene.box({
+      length: 1,
+      width: bounding,
+      height: bounding,
+      pos: [bounding / 2, 0, 0]
+    });
+    var left = scene.box({
+      length: 1,
+      width: bounding,
+      height: bounding,
+      pos: [-bounding / 2, 0, 0]
+    });
+    var top = scene.box({
+      length: bounding,
+      width: bounding,
+      height: 1,
+      pos: [0, bounding / 2, 0]
+    });
+    var bottom = scene.box({
+      length: bounding,
+      width: bounding,
+      height: 1,
+      pos: [0, -bounding / 2, 0]
+    });
+    var back = scene.box({
+      length: bounding,
+      width: 1,
+      height: bounding,
+      pos: [0, 0, -bounding / 2]
+    });
+
+    var velocity = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+    var limit = bounding / 2 - 0.5 - ball.radius;
+
+    function step() {
+      ball.pos.addSelf(velocity);
+      if (Math.abs(ball.pos.x) > limit) {
+        velocity.x *= -1;
+      }
+      if (Math.abs(ball.pos.y) > limit) {
+        velocity.y *= -1;
+      }
+      if (Math.abs(ball.pos.z) > limit) {
+        velocity.z *= -1;
+      }
+    }
+
+    setInterval(step, 30)
+
+  </script>
+</body>
+</html>

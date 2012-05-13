@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual.js - Objects</title>
+  <script type="text/javascript" src="../build/Visual.js"></script>
+  <style type="text/css">
+    body {
+      background: #000;
+      color: #eee;
+      overflow: hidden;
+    }
+    #info {
+      width: 300px;
+      position: absolute;
+      left: 50%;
+      margin-left: -150px;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script type="text/javascript">
+
+    var scene = Visual({
+      container : document.body,
+      width     : window.innerWidth,
+      height    : window.innerHeight,
+      forward   : [-0.3, -0.5, -1],
+    });  
+
+    scene.box({
+      pos: [-4, 0, 0]
+    });
+    
+    scene.sphere({
+      pos: [0, 0, 0]
+    });
+
+    scene.cylinder({
+      pos: [4, 0, 0]
+    });
+
+    scene.cone({
+      pos: [-4, 0, -4]
+    });
+
+    scene.pyramid({
+      pos: [0, 0, -4]
+    });
+
+    scene.arrow({
+      pos: [4, 0, -4]
+    });
+
+    scene.ring({
+      pos: [-4, 0, 4],
+    });
+
+    scene.curve({
+      points: [
+        [ 0.5, -0.5,  3.5], 
+        [ 0.5, -0.5,  4.5],
+        [-0.5, -0.5,  4.5],
+        [-0.5,  0.5,  4.5],
+        [ 0.5,  0.5,  4.5],
+        [ 0.5,  0.5,  3.5],
+        [-0.5,  0.5,  3.5],
+        [-0.5, -0.5,  3.5],
+      ]
+    });
+
+    scene.convex({
+      pos: [4, 0, 4],
+      points: [
+        [0.3, 0.2, 0.3],
+        [0.5, -0.2, 0.3],
+        [0.4, -0.3, -0.1],
+        [-0.3,-0.2, 0.4],
+        [-0.5, -0.5, -0.3],
+        [0.4, -0.4, 0.2],
+        [0.3, 0.4, 0.5],
+        [-0.3, 0.4, -0.5],
+        [-0.5, 0.5, -0.4]
+      ]
+    });
+
+
+
+  </script>
+</body>
+</html>
