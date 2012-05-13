@@ -16,7 +16,7 @@ NOTE: still under heavy development
 Download
 --------
 
-Visual.js bundled with Three.js: https://raw.github.com/qiao/visual.js/master/build/Visual.js
+Visual.js bundled with Three.js: http://qiao.github.com/visual.js/build/Visual.js 
 
 A quick example
 ---------------
