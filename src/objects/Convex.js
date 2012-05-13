@@ -1,6 +1,6 @@
 ;(function() {
 
-var toV3 = Visual.Util.toVector3;
+var toVector3 = Visual.Util.toVector3;
 
 Visual.Convex = function(scene, opts) {
   opts = opts || {};
@@ -18,7 +18,7 @@ Visual.Convex.prototype = Object.create(Visual.Primitive.prototype, {
     value: function() {
       var points = this._points;
       for (var i = 0; i < points.length; ++i) {
-        points[i] = toV3(points[i]);
+        points[i] = toVector3(points[i]);
       }
       var geometry = new THREE.ConvexGeometry(points);
       var material = new THREE.MeshLambertMaterial({ shading: THREE.FlatShading });

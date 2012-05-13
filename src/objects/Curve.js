@@ -1,6 +1,6 @@
 ;(function() {
 
-var toV3 = Visual.Util.toVector3;
+var toVector3 = Visual.Util.toVector3;
 
 Visual.Curve = function(scene, opts) {
   opts = opts || {};
@@ -25,7 +25,7 @@ Visual.Curve.prototype = Object.create(Visual.Primitive.prototype, {
     value: function() {
       var points = this._points;
       for (var i = 0; i < points.length; i++) {
-        points[i] = toV3(points[i]);
+        points[i] = toVector3(points[i]);
       }
       var geometry = new THREE.Geometry();
       geometry.vertices = points;
@@ -36,7 +36,7 @@ Visual.Curve.prototype = Object.create(Visual.Primitive.prototype, {
   },
   append: {
     value: function(point) {
-      point = toV3(point);
+      point = toVector3(point);
       this.mesh.geometry.vertices.push(point)
     }
   },

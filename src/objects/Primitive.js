@@ -1,6 +1,6 @@
 ;(function() {
 
-var toV3  = Visual.Util.toVector3;
+var toVector3  = Visual.Util.toVector3;
 var toColor = Visual.Util.toColor;
 
 Visual.Primitive = function(scene, opts) {
@@ -42,7 +42,7 @@ Visual.Primitive.prototype = {
     return this.mesh.position;
   },
   set pos(v) {
-    this.mesh.position = toV3(v);
+    this.mesh.position = toVector3(v);
   },
 
   get x() {
@@ -68,14 +68,14 @@ Visual.Primitive.prototype = {
     return this.mesh.up;
   },
   set up(v) {
-    this.mesh.up = toV3(v);
+    this.mesh.up = toVector3(v);
   },
 
   get axis() {
     return this._axis;
   },
   set axis(v) {
-    this._axis = toV3(v);
+    this._axis = toVector3(v);
   },
 
   get color() {
@@ -111,8 +111,8 @@ Visual.Primitive.prototype = {
     opts = opts || {};
 
     var angle  = opts.angle  !== undefined ? opts.angle : Math.PI / 4;
-    var axis   = opts.axis   ? toV3(opts.axis)   : this.axis;
-    var origin = opts.origin ? toV3(opts.origin) : this.pos;
+    var axis   = opts.axis   ? toVector3(opts.axis)   : this.axis;
+    var origin = opts.origin ? toVector3(opts.origin) : this.pos;
 
     var dummy = new THREE.Object3D();
     dummy.position.copy(origin);
