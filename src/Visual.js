@@ -6,7 +6,7 @@ function Visual(opts) {
   opts = opts || {};
 
   var toV3  = Visual.Util.toVector3;
-  var toHex = Visual.Util.toColorHex;
+  var toColor = Visual.Util.toColor;
 
   // setup scene parameters
   this._container  = opts.container  || document.body;
@@ -15,8 +15,8 @@ function Visual(opts) {
   this._scale      = opts.scale      || 0.1;
   this._fov        = opts.fov        || 60;
 
-  this.foreground  = opts.foreground !== undefined ? toHex(opts.foreground) : 0xffffff;
-  this.background  = opts.background !== undefined ? toHex(opts.background) : 0x000000;
+  this.foreground  = opts.foreground !== undefined ? toColor(opts.foreground) : 0xffffff;
+  this.background  = opts.background !== undefined ? toColor(opts.background) : 0x000000;
 
   this.center      = opts.center     ? toV3(opts.center)  : new THREE.Vector3(0, 0, 0);
   this.forward     = opts.forward    ? toV3(opts.forward) : new THREE.Vector3(0, 0, -1);

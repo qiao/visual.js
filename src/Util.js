@@ -15,11 +15,11 @@ Visual.Util = {
     return new THREE.Vector3(vec3[0], vec3[1], vec3[2]);
   },
   /**
-   * Convert a color to the hex form.
+   * Convert a color to the hex form acceptable by three.js
    * @param {object} color Possible: 'red', '#f00', '#ff0000', 0xff0000
    * @return {number} e.g. 0xff0000
    */
-  toColorHex: function(color) {
+  toColor: function(color) {
     switch (typeof color) {
       case 'number': return color;
       case 'string': break;
