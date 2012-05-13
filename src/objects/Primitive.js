@@ -104,6 +104,7 @@ Visual.Primitive.prototype = {
   },
   set opacity(v) {
     this.mesh.material.opacity = v;
+    this.mesh.transparent = (v < 1);
   },
 
   rotate: function(opts) {
